@@ -96,38 +96,33 @@
         }
 
         function parseInput(value) {
-            value = value.toUpperCase().trim();
-            value = value.replace(/,/g, '');  // Remove commas
-            let multiplier = 1;
-
-            if (value.endsWith('T')) multiplier = 1e12;
-            else if (value.endsWith('B')) multiplier = 1e9;
-            else if (value.endsWith('M')) multiplier = 1e6;
-            else if (value.endsWith('K')) multiplier = 1e3;
-
-            return parseFloat(value.replace(/[KMBT]/, '')) * multiplier || 0;
+            value = value.trim();
+            if (value.includes(',')) {
+                value = value.replace(',', '.');  // Replace comma with dot for decimal
+            }
+            return parseFloat(value) || 0;
         }
 
         function handleInput(input) {
-            let rawValue = input.value.toUpperCase();
+            let rawValue = input.value.trim();
             if (rawValue === "THEME") {
                 document.getElementById("themeMenu").classList.remove("hidden");
                 input.value = "";
             } else {
                 let convertedValue = parseInput(rawValue);
                 if (!isNaN(convertedValue) && convertedValue > 0) {
-                    input.value = convertedValue.toLocaleString();  // Format with commas
+                    input.value = convertedValue.toLocaleString();  // Format with commas, if necessary
                 }
             }
         }
 
         function calculateProfit() {
-            let cashInvestedRaw = document.getElementById('cashInvested').value.replace(/,/g, '');
-            let purchasePriceRaw = document.getElementById('purchasePrice').value.replace(/,/g, '');
-            let currentPriceRaw = document.getElementById('currentPrice').value.replace(/,/g, '');
+            let cashInvestedRaw = document.getElementById('cashInvested').value;
+            let purchasePriceRaw = document.getElementById('purchasePrice').value;
+            let currentPriceRaw = document.getElementById('currentPrice').value;
 
-            let purchasePrice = parseFloat(purchasePriceRaw);
-            let currentPrice = parseFloat(currentPriceRaw);
+            let purchasePrice = parseInput(purchasePriceRaw);
+            let currentPrice = parseInput(currentPriceRaw);
 
             let cashInvested = parseInput(cashInvestedRaw);
 
