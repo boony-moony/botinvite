@@ -127,25 +127,28 @@
         }
 
         function calculateProfit() {
-            let cashInvested = parseInput(document.getElementById('cashInvested').value);
-            let purchasePrice = parseFloat(document.getElementById('purchasePrice').value);
-            let currentPrice = parseFloat(document.getElementById('currentPrice').value);
+    let cashInvestedRaw = document.getElementById('cashInvested').value.replace(/,/g, '');
+    let purchasePrice = parseFloat(document.getElementById('purchasePrice').value);
+    let currentPrice = parseFloat(document.getElementById('currentPrice').value);
 
-            if (isNaN(cashInvested) || isNaN(purchasePrice) || isNaN(currentPrice) || purchasePrice <= 0) {
-                alert('Please enter valid numbers');
-                return;
-            }
+    let cashInvested = parseInput(cashInvestedRaw);
 
-            let sharesOwned = cashInvested / purchasePrice;
-            let totalValue = sharesOwned * currentPrice;
-            let profitLoss = totalValue - cashInvested;
-            let roi = ((profitLoss / cashInvested) * 100).toFixed(2);
+    if (isNaN(cashInvested) || isNaN(purchasePrice) || isNaN(currentPrice) || purchasePrice <= 0) {
+        alert('Please enter valid numbers');
+        return;
+    }
 
-            document.getElementById('sharesOwned').textContent = formatNumber(sharesOwned);
-            document.getElementById('totalValue').textContent = `$${formatNumber(totalValue)}`;
-            document.getElementById('profitLoss').textContent = `$${formatNumber(profitLoss)}`;
-            document.getElementById('roi').textContent = `${roi}%`;
-        }
+    let sharesOwned = cashInvested / purchasePrice;
+    let totalValue = sharesOwned * currentPrice;
+    let profitLoss = totalValue - cashInvested;
+    let roi = ((profitLoss / cashInvested) * 100).toFixed(2);
+
+    document.getElementById('sharesOwned').textContent = formatNumber(sharesOwned);
+    document.getElementById('totalValue').textContent = `$${formatNumber(totalValue)}`;
+    document.getElementById('profitLoss').textContent = `$${formatNumber(profitLoss)}`;
+    document.getElementById('profitLoss').className = profitLoss >= 0 ? 'text-green-400' : 'text-red-400';
+    document.getElementById('roi').textContent = `${roi}%`;
+}
 
         function changeTheme(theme) {
             let themes = {
