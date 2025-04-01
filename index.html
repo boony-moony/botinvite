@@ -118,13 +118,20 @@
             return parseFloat(value.replace(/[KMBT]/, '')) * multiplier || 0;
         }
 
-        function handleInput(input) {
-            let rawValue = input.value.toUpperCase();
-            let convertedValue = parseInput(rawValue);
-            if (!isNaN(convertedValue) && convertedValue > 0) {
-                input.value = convertedValue.toLocaleString();
-            }
-        }
+function handleInput(input) {
+    let rawValue = input.value.toUpperCase().trim();
+
+    if (rawValue === "THEME") {
+        document.getElementById("themeMenu").classList.remove("hidden");
+        setTimeout(() => input.value = "", 100); // Clear after showing menu
+        return;
+    }
+
+    let convertedValue = parseInput(rawValue);
+    if (!isNaN(convertedValue) && convertedValue > 0) {
+        input.value = convertedValue.toLocaleString();
+    }
+}
 
         function calculateProfit() {
     let cashInvestedRaw = document.getElementById('cashInvested').value.replace(/,/g, '');
