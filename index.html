@@ -96,11 +96,24 @@
         }
 
         function parseInput(value) {
-            value = value.trim();
+            value = value.trim().toLowerCase();
             if (value.includes(',')) {
                 value = value.replace(',', '.');  // Replace comma with dot for decimal
             }
-            return parseFloat(value) || 0;
+
+            let multiplier = 1;
+            if (value.endsWith('m')) {
+                multiplier = 1e6;  // Million
+                value = value.slice(0, -1);  // Remove the 'm'
+            } else if (value.endsWith('b')) {
+                multiplier = 1e9;  // Billion
+                value = value.slice(0, -1);  // Remove the 'b'
+            } else if (value.endsWith('k')) {
+                multiplier = 1e3;  // Thousand
+                value = value.slice(0, -1);  // Remove the 'k'
+            }
+
+            return parseFloat(value) * multiplier || 0;
         }
 
         function handleBlur(input) {
