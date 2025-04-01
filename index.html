@@ -52,17 +52,17 @@
 
         <div class="mb-4">
             <label class="block text-sm font-medium">Cash Invested ($)</label>
-            <input type="text" id="cashInvested" class="w-full p-2 mt-1 bg-gray-700 text-white border border-gray-600 rounded" placeholder="Enter cash (e.g., 2M, 5B)" oninput="handleInput(this)">
+            <input type="text" id="cashInvested" class="w-full p-2 mt-1 bg-gray-700 text-white border border-gray-600 rounded" placeholder="Enter cash (e.g., 2M, 5B)" onblur="handleBlur(this)">
         </div>
 
         <div class="mb-4">
             <label class="block text-sm font-medium">Purchase Price Per Share ($)</label>
-            <input type="text" id="purchasePrice" class="w-full p-2 mt-1 bg-gray-700 text-white border border-gray-600 rounded" placeholder="Enter purchase price" oninput="handleInput(this)">
+            <input type="text" id="purchasePrice" class="w-full p-2 mt-1 bg-gray-700 text-white border border-gray-600 rounded" placeholder="Enter purchase price" onblur="handleBlur(this)">
         </div>
 
         <div class="mb-4">
             <label class="block text-sm font-medium">Current Price Per Share ($)</label>
-            <input type="text" id="currentPrice" class="w-full p-2 mt-1 bg-gray-700 text-white border border-gray-600 rounded" placeholder="Enter current price" oninput="handleInput(this)">
+            <input type="text" id="currentPrice" class="w-full p-2 mt-1 bg-gray-700 text-white border border-gray-600 rounded" placeholder="Enter current price" onblur="handleBlur(this)">
         </div>
 
         <button onclick="calculateProfit()" class="w-full button hover:opacity-80 text-white font-bold py-2 px-4 rounded">Calculate</button>
@@ -103,7 +103,7 @@
             return parseFloat(value) || 0;
         }
 
-        function handleInput(input) {
+        function handleBlur(input) {
             let rawValue = input.value.trim();
             if (rawValue === "THEME") {
                 document.getElementById("themeMenu").classList.remove("hidden");
@@ -112,6 +112,8 @@
                 let convertedValue = parseInput(rawValue);
                 if (!isNaN(convertedValue) && convertedValue > 0) {
                     input.value = convertedValue.toLocaleString();  // Format with commas, if necessary
+                } else {
+                    input.value = "";  // If input is invalid, clear the value
                 }
             }
         }
