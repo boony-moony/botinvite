@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Torn Stock Market Calculator (TSMC)</title>
+    <title>TSMC - Torn Stock Market Calculator</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         :root {
@@ -18,19 +18,48 @@
         }
         .card {
             background-color: var(--card-color);
+            padding: 1.5rem;
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
         .button {
             background-color: var(--button-color);
+            text-align: center;
+            padding: 0.75rem;
+            font-weight: bold;
+            border-radius: 0.5rem;
+            transition: background-color 0.3s;
         }
+        .button:hover {
+            opacity: 0.8;
+        }
+        /* Theme menu styles */
         #themeMenu {
             background-color: rgba(0, 0, 0, 0.6);
+        }
+        .theme-card {
+            background-color: var(--card-color);
+            padding: 1.5rem;
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .theme-button {
+            background-color: var(--button-color);
+            text-align: center;
+            padding: 0.75rem;
+            font-weight: bold;
+            border-radius: 0.5rem;
+            transition: background-color 0.3s;
+        }
+        .theme-button:hover {
+            opacity: 0.8;
         }
     </style>
 </head>
 <body onload="loadTheme()">
 
-    <div class="max-w-md mx-auto mt-10 p-5 card rounded-lg shadow-lg">
-        <h2 class="text-xl font-bold text-center mb-5">Torn Stock Market Calculator</h2>
+    <div class="max-w-md mx-auto mt-10 p-5 card">
+        <h2 class="text-xl font-bold text-center mb-5">Torn Stock Market Calculator (TSMC)</h2>
 
         <div class="mb-4">
             <label class="block text-sm font-medium">Cash Invested ($)</label>
@@ -49,12 +78,22 @@
 
         <button onclick="calculateProfit()" class="w-full button hover:opacity-80 text-white font-bold py-2 px-4 rounded">Calculate</button>
 
-        <div class="mt-5 p-4 card rounded">
+        <div class="mt-5 p-4 card">
             <h3 class="text-lg font-bold">Results</h3>
             <p>Shares Owned: <span id="sharesOwned">0</span></p>
             <p>Total Value: <span id="totalValue">$0</span></p>
             <p>Profit/Loss: <span id="profitLoss" class="text-green-400">$0</span></p>
             <p>ROI: <span id="roi" class="text-green-400">0.00%</span></p>
+        </div>
+    </div>
+
+    <!-- Hidden Theme Menu -->
+    <div id="themeMenu" class="hidden fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+        <div class="theme-card">
+            <h3 class="text-lg font-bold mb-3 text-center text-white">Select Theme</h3>
+            <button onclick="changeTheme('dark')" class="theme-button w-full mb-2">Dark Mode</button>
+            <button onclick="changeTheme('deepRed')" class="theme-button w-full mb-2">Deep Red</button>
+            <button onclick="changeTheme('deepBlue')" class="theme-button w-full">Deep Blue</button>
         </div>
     </div>
 
@@ -68,9 +107,9 @@
         }
 
         function parseInput(value) {
-            value = value.toUpperCase().trim().replace(',', '.');
+            value = value.replace(/,/g, '').toUpperCase().trim();
             let multiplier = 1;
-            
+
             if (value.endsWith('T')) multiplier = 1e12;
             else if (value.endsWith('B')) multiplier = 1e9;
             else if (value.endsWith('M')) multiplier = 1e6;
@@ -88,11 +127,9 @@
         }
 
         function calculateProfit() {
-            let cashInvestedRaw = document.getElementById('cashInvested').value.replace(/,/g, '');
+            let cashInvested = parseInput(document.getElementById('cashInvested').value);
             let purchasePrice = parseFloat(document.getElementById('purchasePrice').value);
             let currentPrice = parseFloat(document.getElementById('currentPrice').value);
-
-            let cashInvested = parseInput(cashInvestedRaw);
 
             if (isNaN(cashInvested) || isNaN(purchasePrice) || isNaN(currentPrice) || purchasePrice <= 0) {
                 alert('Please enter valid numbers');
@@ -107,34 +144,28 @@
             document.getElementById('sharesOwned').textContent = formatNumber(sharesOwned);
             document.getElementById('totalValue').textContent = `$${formatNumber(totalValue)}`;
             document.getElementById('profitLoss').textContent = `$${formatNumber(profitLoss)}`;
-            document.getElementById('profitLoss').className = profitLoss >= 0 ? 'text-green-400' : 'text-red-400';
             document.getElementById('roi').textContent = `${roi}%`;
-            document.getElementById('roi').className = profitLoss >= 0 ? 'text-green-400' : 'text-red-400';
         }
 
         function changeTheme(theme) {
-            localStorage.setItem("selectedTheme", theme);
+            let themes = {
+                dark: { bg: "#1a202c", card: "#2d3748", button: "#22c55e" },
+                deepRed: { bg: "#64002D", card: "#40001E", button: "#ff3b3b" },
+                deepBlue: { bg: "#09193C", card: "#06112A", button: "#1e90ff" }
+            };
 
-            if (theme === 'deep-red') {
-                document.documentElement.style.setProperty('--bg-color', '#64002D');
-                document.documentElement.style.setProperty('--card-color', '#320015');
-                document.documentElement.style.setProperty('--button-color', '#A00050');
-            } else if (theme === 'deep-blue') {
-                document.documentElement.style.setProperty('--bg-color', '#09193C');
-                document.documentElement.style.setProperty('--card-color', '#040E21');
-                document.documentElement.style.setProperty('--button-color', '#123A7F');
-            } else {
-                document.documentElement.style.setProperty('--bg-color', '#1a202c');
-                document.documentElement.style.setProperty('--card-color', '#2d3748');
-                document.documentElement.style.setProperty('--button-color', '#22c55e');
-            }
+            let colors = themes[theme];
+            document.documentElement.style.setProperty('--bg-color', colors.bg);
+            document.documentElement.style.setProperty('--card-color', colors.card);
+            document.documentElement.style.setProperty('--button-color', colors.button);
+            localStorage.setItem("selectedTheme", theme);
+            document.getElementById("themeMenu").classList.add("hidden");
         }
 
         function loadTheme() {
-            let savedTheme = localStorage.getItem("selectedTheme");
-            if (savedTheme) changeTheme(savedTheme);
+            let savedTheme = localStorage.getItem("selectedTheme") || 'dark';
+            changeTheme(savedTheme);
         }
     </script>
-
 </body>
 </html>
