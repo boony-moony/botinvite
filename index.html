@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Stock Market Calculator</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
             --bg-color: #1a202c;
@@ -22,10 +21,6 @@
         }
         .button {
             background-color: var(--button-color);
-        }
-        .graph-container {
-            width: 100%;
-            height: 300px; /* Adjust the height based on preference */
         }
     </style>
 </head>
@@ -56,21 +51,11 @@
             <p>Shares Owned: <span id="sharesOwned">0</span></p>
             <p>Total Value: <span id="totalValue">$0</span></p>
             <p>Profit/Loss: <span id="profitLoss" class="text-green-400">$0</span></p>
-            <p>Percentage Change: <span id="percentageChange" class="text-green-400">0.00%</span></p>
             <p>ROI: <span id="roi">0%</span></p>
-        </div>
-
-        <!-- Chart for investment graph -->
-        <div class="mt-5 card p-4 rounded">
-            <div class="graph-container">
-                <canvas id="investmentGraph"></canvas>
-            </div>
         </div>
     </div>
 
     <script>
-        let investmentData = [];
-
         function formatNumber(num) {
             if (num >= 1e12) return (num / 1e12).toFixed(2) + 'T';
             if (num >= 1e9) return (num / 1e9).toFixed(2) + 'B';
@@ -119,60 +104,13 @@
             let sharesOwned = cashInvested / purchasePrice;
             let totalValue = sharesOwned * currentPrice;
             let profitLoss = totalValue - cashInvested;
-            let percentageChange = ((profitLoss / cashInvested) * 100).toFixed(2);
             let roi = ((profitLoss / cashInvested) * 100).toFixed(2);
 
             document.getElementById('sharesOwned').textContent = formatNumber(sharesOwned);
             document.getElementById('totalValue').textContent = `$${formatNumber(totalValue)}`;
             document.getElementById('profitLoss').textContent = `$${formatNumber(profitLoss)}`;
             document.getElementById('profitLoss').className = profitLoss >= 0 ? 'text-green-400' : 'text-red-400';
-            document.getElementById('percentageChange').textContent = `${percentageChange}%`;
-            document.getElementById('percentageChange').className = profitLoss >= 0 ? 'text-green-400' : 'text-red-400';
             document.getElementById('roi').textContent = `${roi}%`;
-
-            // Collect data for the graph
-            investmentData.push({
-                label: new Date().toLocaleTimeString(),
-                value: totalValue
-            });
-
-            updateGraph();
-        }
-
-        // Initialize the investment graph
-        function updateGraph() {
-            const ctx = document.getElementById('investmentGraph').getContext('2d');
-            const graphData = {
-                labels: investmentData.map(item => item.label),
-                datasets: [{
-                    label: 'Investment Value ($)',
-                    data: investmentData.map(item => item.value),
-                    borderColor: 'rgba(34, 197, 94, 1)',
-                    backgroundColor: 'rgba(34, 197, 94, 0.2)',
-                    fill: true,
-                    tension: 0.4
-                }]
-            };
-
-            const config = {
-                type: 'line',
-                data: graphData,
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        x: {
-                            type: 'category',
-                            labels: investmentData.map(item => item.label),
-                        },
-                        y: {
-                            beginAtZero: false
-                        }
-                    }
-                }
-            };
-
-            new Chart(ctx, config);
         }
     </script>
 
