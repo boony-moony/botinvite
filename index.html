@@ -22,6 +22,27 @@
         .button {
             background-color: var(--button-color);
         }
+        /* Theme menu styles */
+        #themeMenu {
+            background-color: rgba(0, 0, 0, 0.6);
+        }
+        .theme-card {
+            background-color: var(--card-color);
+            padding: 1.5rem;
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .theme-button {
+            background-color: var(--button-color);
+            text-align: center;
+            padding: 0.75rem;
+            font-weight: bold;
+            border-radius: 0.5rem;
+            transition: background-color 0.3s;
+        }
+        .theme-button:hover {
+            opacity: 0.8;
+        }
     </style>
 </head>
 <body onload="loadTheme()">
@@ -57,11 +78,11 @@
 
     <!-- Hidden Theme Menu -->
     <div id="themeMenu" class="hidden fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
-        <div class="bg-white p-6 rounded shadow-lg">
-            <h3 class="text-lg font-bold mb-3">Select Theme</h3>
-            <button onclick="changeTheme('dark')" class="block w-full mb-2 p-2 bg-gray-800 text-white rounded">Dark Mode</button>
-            <button onclick="changeTheme('orange')" class="block w-full mb-2 p-2 bg-orange-700 text-white rounded">Orange Theme</button>
-            <button onclick="changeTheme('purple')" class="block w-full p-2 bg-purple-700 text-white rounded">Purple Theme</button>
+        <div class="theme-card">
+            <h3 class="text-lg font-bold mb-3 text-center text-white">Select Theme</h3>
+            <button onclick="changeTheme('dark')" class="theme-button w-full mb-2">Dark Mode</button>
+            <button onclick="changeTheme('orange')" class="theme-button w-full mb-2">Orange Theme</button>
+            <button onclick="changeTheme('purple')" class="theme-button w-full">Purple Theme</button>
         </div>
     </div>
 
