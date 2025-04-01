@@ -23,13 +23,6 @@
         .button {
             background-color: var(--button-color);
         }
-        #statisticsDropdown {
-            background-color: var(--card-color);
-            padding: 1rem;
-            border-radius: 1rem;
-            margin-top: 1rem;
-            display: none;
-        }
         .graph-container {
             width: 100%;
             height: 300px; /* Adjust the height based on preference */
@@ -64,14 +57,7 @@
             <p>Total Value: <span id="totalValue">$0</span></p>
             <p>Profit/Loss: <span id="profitLoss" class="text-green-400">$0</span></p>
             <p>Percentage Change: <span id="percentageChange" class="text-green-400">0.00%</span></p>
-        </div>
-
-        <!-- Dropdown for additional statistics -->
-        <div id="statisticsDropdown">
-            <h3 class="text-lg font-bold mb-3">Additional Statistics</h3>
             <p>ROI: <span id="roi">0%</span></p>
-            <p>Total Shares Sold: <span id="sharesSold">0</span></p>
-            <p>Market Value Change: <span id="marketValueChange">$0</span></p>
         </div>
 
         <!-- Chart for investment graph -->
@@ -135,8 +121,6 @@
             let profitLoss = totalValue - cashInvested;
             let percentageChange = ((profitLoss / cashInvested) * 100).toFixed(2);
             let roi = ((profitLoss / cashInvested) * 100).toFixed(2);
-            let sharesSold = sharesOwned * (currentPrice / purchasePrice);
-            let marketValueChange = totalValue - cashInvested;
 
             document.getElementById('sharesOwned').textContent = formatNumber(sharesOwned);
             document.getElementById('totalValue').textContent = `$${formatNumber(totalValue)}`;
@@ -144,12 +128,7 @@
             document.getElementById('profitLoss').className = profitLoss >= 0 ? 'text-green-400' : 'text-red-400';
             document.getElementById('percentageChange').textContent = `${percentageChange}%`;
             document.getElementById('percentageChange').className = profitLoss >= 0 ? 'text-green-400' : 'text-red-400';
-
-            // Show statistics
-            document.getElementById('statisticsDropdown').style.display = 'block';
             document.getElementById('roi').textContent = `${roi}%`;
-            document.getElementById('sharesSold').textContent = formatNumber(sharesSold);
-            document.getElementById('marketValueChange').textContent = `$${formatNumber(marketValueChange)}`;
 
             // Collect data for the graph
             investmentData.push({
@@ -169,8 +148,9 @@
                     label: 'Investment Value ($)',
                     data: investmentData.map(item => item.value),
                     borderColor: 'rgba(34, 197, 94, 1)',
-                    fill: false,
-                    tension: 0.1
+                    backgroundColor: 'rgba(34, 197, 94, 0.2)',
+                    fill: true,
+                    tension: 0.4
                 }]
             };
 
@@ -182,8 +162,11 @@
                     maintainAspectRatio: false,
                     scales: {
                         x: {
-                            type: 'linear',
-                            position: 'bottom'
+                            type: 'category',
+                            labels: investmentData.map(item => item.label),
+                        },
+                        y: {
+                            beginAtZero: false
                         }
                     }
                 }
