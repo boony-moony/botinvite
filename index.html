@@ -50,12 +50,14 @@
   <div class="max-w-md mx-auto mt-10 p-5 card rounded-lg shadow-lg">
     <h2 class="text-xl font-bold text-center mb-5">Stock Market Calculator</h2>
 
+    <!-- Cash Invested field: supports shorthand and localized formatting -->
     <div class="mb-4">
       <label class="block text-sm font-medium">Cash Invested ($)</label>
       <input type="text" id="cashInvested" class="w-full p-2 mt-1 bg-gray-700 text-white border border-gray-600 rounded" 
-             placeholder="Enter cash (e.g., 2M, 5B)" oninput="handleCashInput(this)" onblur="formatInvestedField(this)">
+             placeholder="Enter cash (e.g., 2M, 5B or 20000,90)" oninput="handleCashInput(this)" onblur="formatInvestedField(this)">
     </div>
 
+    <!-- Purchase Price and Current Price fields -->
     <div class="mb-4">
       <label class="block text-sm font-medium">Purchase Price Per Share ($)</label>
       <input type="text" id="purchasePrice" class="w-full p-2 mt-1 bg-gray-700 text-white border border-gray-600 rounded" 
@@ -90,73 +92,76 @@
   </div>
 
   <script>
-    // Function to format the number with dots as thousand separators and comma as decimal
-    function formatNumberWithComma(num) {
-      return num.toLocaleString('de-DE');  // Using 'de-DE' locale for comma as decimal
+    // Format a number using the 'de-DE' locale (which uses dot for thousands and comma for decimals)
+    function formatNumberWithDe(num) {
+      return num.toLocaleString('de-DE');
     }
 
-    // Parses the shorthand input (k, m, b, t) and returns the full number
-    function parseInput(value) {
+    // Parse the Cash Invested field value.
+    // If a shorthand letter (k, m, b, t) is present, use it; otherwise, assume a localized number (e.g., "20000,90")
+    function parseInvestedInput(value) {
       value = value.trim().toLowerCase();
-
       let multiplier = 1;
-      if (value.endsWith('m')) {
-        multiplier = 1e6; // million
-        value = value.slice(0, -1); // Remove the 'm'
-      } else if (value.endsWith('b')) {
-        multiplier = 1e9; // billion
-        value = value.slice(0, -1); // Remove the 'b'
-      } else if (value.endsWith('k')) {
-        multiplier = 1e3; // thousand
-        value = value.slice(0, -1); // Remove the 'k'
-      } else if (value.endsWith('t')) {
-        multiplier = 1e12; // trillion
-        value = value.slice(0, -1); // Remove the 't'
-      }
-
-      let num = parseFloat(value) * multiplier;
-
-      if (!isNaN(num)) {
-        return num;
+      if (/[kmbt]$/.test(value)) {
+        if (value.endsWith('m')) {
+          multiplier = 1e6;
+          value = value.slice(0, -1);
+        } else if (value.endsWith('b')) {
+          multiplier = 1e9;
+          value = value.slice(0, -1);
+        } else if (value.endsWith('k')) {
+          multiplier = 1e3;
+          value = value.slice(0, -1);
+        } else if (value.endsWith('t')) {
+          multiplier = 1e12;
+          value = value.slice(0, -1);
+        }
+        // Replace any comma with a dot for parsing decimals
+        value = value.replace(',', '.');
+        let num = parseFloat(value);
+        return isNaN(num) ? 0 : num * multiplier;
       } else {
-        return 0;
+        // Assume the input is in localized format like "20000,90" (no thousand separator yet)
+        // Remove any dots (if the user typed them) then replace comma with dot for parseFloat
+        let normalized = value.replace(/\./g, '').replace(',', '.');
+        let num = parseFloat(normalized);
+        return isNaN(num) ? 0 : num;
       }
     }
 
-    // Handle input for the "Cash Invested" field
+    // When typing in the Cash Invested field, allow valid characters.
     function handleCashInput(input) {
-      let rawValue = input.value.trim();
-
-      // Only allow numeric characters and commas
-      rawValue = rawValue.replace(/[^0-9,]/g, '');
-
-      // If value includes commas, let it be for now and wait for blur
-      input.value = rawValue;
+      // Allow digits, comma, dot, and shorthand letters (k, m, b, t)
+      input.value = input.value.replace(/[^0-9,\.kmbt]/gi, '');
     }
 
-    // Format the field after the user is done typing
+    // On blur, format the Cash Invested field to the desired format.
     function formatInvestedField(input) {
-      let rawValue = input.value.trim();
-      if (rawValue === "") return;
-
-      // Replace any commas with periods for decimal
-      rawValue = rawValue.replace(',', '.');
-
-      // Format the number with thousands separator
-      let formattedValue = parseInput(rawValue);
-
-      input.value = formatNumberWithComma(formattedValue); // Format number with commas
+      let rawValue = input.value;
+      if (!rawValue) return;
+      let num = parseInvestedInput(rawValue);
+      if (num === 0) return;
+      // Format the number using de-DE locale (thousands separated by dot, decimals by comma)
+      input.value = formatNumberWithDe(num);
     }
 
-    // Calculate profit based on the inputs
+    // For Purchase and Current Price fields, parse standard input:
+    function parseStandardInput(value) {
+      value = value.trim();
+      // Remove thousand separators (if any) and replace comma with dot
+      let normalized = value.replace(/\./g, '').replace(',', '.');
+      return parseFloat(normalized);
+    }
+
     function calculateProfit() {
-      let cashInvestedRaw = document.getElementById('cashInvested').value.replace(/,/g, '');
-      let purchasePrice = parseFloat(document.getElementById('purchasePrice').value.replace(',', '.'));
-      let currentPrice = parseFloat(document.getElementById('currentPrice').value.replace(',', '.'));
+      let cashInvestedRaw = document.getElementById('cashInvested').value;
+      let purchasePriceRaw = document.getElementById('purchasePrice').value;
+      let currentPriceRaw = document.getElementById('currentPrice').value;
+      
+      let cashInvested = parseInvestedInput(cashInvestedRaw);
+      let purchasePrice = parseStandardInput(purchasePriceRaw);
+      let currentPrice = parseStandardInput(currentPriceRaw);
 
-      let cashInvested = parseInput(cashInvestedRaw);
-
-      // Allow for valid decimals or numbers in other fields
       if (isNaN(cashInvested) || isNaN(purchasePrice) || isNaN(currentPrice) || purchasePrice <= 0) {
         alert('Please enter valid numbers');
         return;
@@ -167,11 +172,11 @@
       let profitLoss = totalValue - cashInvested;
       let percentageChange = ((profitLoss / cashInvested) * 100).toFixed(2);
 
-      document.getElementById('sharesOwned').textContent = formatNumberWithComma(sharesOwned);
-      document.getElementById('totalValue').textContent = `$${formatNumberWithComma(totalValue)}`;
-      document.getElementById('profitLoss').textContent = `$${formatNumberWithComma(profitLoss)}`;
+      document.getElementById('sharesOwned').textContent = formatNumberWithDe(sharesOwned);
+      document.getElementById('totalValue').textContent = '$' + formatNumberWithDe(totalValue);
+      document.getElementById('profitLoss').textContent = '$' + formatNumberWithDe(profitLoss);
       document.getElementById('profitLoss').className = profitLoss >= 0 ? 'text-green-400' : 'text-red-400';
-      document.getElementById('percentageChange').textContent = `${percentageChange}%`;
+      document.getElementById('percentageChange').textContent = percentageChange + '%';
       document.getElementById('percentageChange').className = profitLoss >= 0 ? 'text-green-400' : 'text-red-400';
     }
 
