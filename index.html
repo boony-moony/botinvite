@@ -1,1 +1,70 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stock Market Calculator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-900 text-white">
+
+    <div class="max-w-md mx-auto mt-10 p-5 bg-gray-800 rounded-lg shadow-lg">
+        <h2 class="text-xl font-bold text-center mb-5">Stock Market Calculator</h2>
+
+        <div class="mb-4">
+            <label class="block text-sm font-medium text-gray-300">Stock Name</label>
+            <input type="text" id="stockName" class="w-full p-2 mt-1 bg-gray-700 text-white border border-gray-600 rounded" placeholder="Enter stock name">
+        </div>
+
+        <div class="mb-4">
+            <label class="block text-sm font-medium text-gray-300">Quantity Owned</label>
+            <input type="number" id="quantity" class="w-full p-2 mt-1 bg-gray-700 text-white border border-gray-600 rounded" placeholder="Enter quantity">
+        </div>
+
+        <div class="mb-4">
+            <label class="block text-sm font-medium text-gray-300">Purchase Price ($)</label>
+            <input type="number" id="purchasePrice" class="w-full p-2 mt-1 bg-gray-700 text-white border border-gray-600 rounded" placeholder="Enter purchase price">
+        </div>
+
+        <div class="mb-4">
+            <label class="block text-sm font-medium text-gray-300">Current Price ($)</label>
+            <input type="number" id="currentPrice" class="w-full p-2 mt-1 bg-gray-700 text-white border border-gray-600 rounded" placeholder="Enter current price">
+        </div>
+
+        <button onclick="calculateProfit()" class="w-full bg-green-600 hover:bg-green-500 text-white font-bold py-2 px-4 rounded">Calculate</button>
+
+        <div class="mt-5 p-4 bg-gray-700 rounded">
+            <h3 class="text-lg font-bold">Results</h3>
+            <p>Total Value: <span id="totalValue">$0.00</span></p>
+            <p>Profit/Loss: <span id="profitLoss" class="text-green-400">$0.00</span></p>
+            <p>Percentage Change: <span id="percentageChange" class="text-green-400">0.00%</span></p>
+        </div>
+    </div>
+
+    <script>
+        function calculateProfit() {
+            let quantity = parseFloat(document.getElementById('quantity').value);
+            let purchasePrice = parseFloat(document.getElementById('purchasePrice').value);
+            let currentPrice = parseFloat(document.getElementById('currentPrice').value);
+
+            if (isNaN(quantity) || isNaN(purchasePrice) || isNaN(currentPrice)) {
+                alert('Please enter valid numbers');
+                return;
+            }
+
+            let totalValue = quantity * currentPrice;
+            let totalCost = quantity * purchasePrice;
+            let profitLoss = totalValue - totalCost;
+            let percentageChange = ((profitLoss / totalCost) * 100).toFixed(2);
+
+            document.getElementById('totalValue').textContent = `$${totalValue.toFixed(2)}`;
+            document.getElementById('profitLoss').textContent = `$${profitLoss.toFixed(2)}`;
+            document.getElementById('profitLoss').className = profitLoss >= 0 ? 'text-green-400' : 'text-red-400';
+            document.getElementById('percentageChange').textContent = `${percentageChange}%`;
+            document.getElementById('percentageChange').className = profitLoss >= 0 ? 'text-green-400' : 'text-red-400';
+        }
+    </script>
+
+</body>
+</html>
