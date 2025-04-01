@@ -30,6 +30,10 @@
             margin-top: 1rem;
             display: none;
         }
+        .graph-container {
+            width: 100%;
+            height: 300px; /* Adjust the height based on preference */
+        }
     </style>
 </head>
 <body>
@@ -72,7 +76,9 @@
 
         <!-- Chart for investment graph -->
         <div class="mt-5 card p-4 rounded">
-            <canvas id="investmentGraph" width="400" height="200"></canvas>
+            <div class="graph-container">
+                <canvas id="investmentGraph"></canvas>
+            </div>
         </div>
     </div>
 
@@ -129,70 +135,61 @@
             let profitLoss = totalValue - cashInvested;
             let percentageChange = ((profitLoss / cashInvested) * 100).toFixed(2);
             let roi = ((profitLoss / cashInvested) * 100).toFixed(2);
-            let sharesSold = sharesOwned * currentPrice;
+            let sharesSold = sharesOwned * (currentPrice / purchasePrice);
+            let marketValueChange = totalValue - cashInvested;
 
-            // Update statistics
             document.getElementById('sharesOwned').textContent = formatNumber(sharesOwned);
             document.getElementById('totalValue').textContent = `$${formatNumber(totalValue)}`;
             document.getElementById('profitLoss').textContent = `$${formatNumber(profitLoss)}`;
             document.getElementById('profitLoss').className = profitLoss >= 0 ? 'text-green-400' : 'text-red-400';
             document.getElementById('percentageChange').textContent = `${percentageChange}%`;
             document.getElementById('percentageChange').className = profitLoss >= 0 ? 'text-green-400' : 'text-red-400';
+
+            // Show statistics
+            document.getElementById('statisticsDropdown').style.display = 'block';
             document.getElementById('roi').textContent = `${roi}%`;
             document.getElementById('sharesSold').textContent = formatNumber(sharesSold);
-            document.getElementById('marketValueChange').textContent = formatNumber(profitLoss);
+            document.getElementById('marketValueChange').textContent = `$${formatNumber(marketValueChange)}`;
 
-            // Add data to the graph
-            investmentData.push({ x: new Date(), y: totalValue });
+            // Collect data for the graph
+            investmentData.push({
+                label: new Date().toLocaleTimeString(),
+                value: totalValue
+            });
+
             updateGraph();
-
-            // Show the dropdown statistics
-            document.getElementById('statisticsDropdown').style.display = 'block';
         }
 
+        // Initialize the investment graph
         function updateGraph() {
             const ctx = document.getElementById('investmentGraph').getContext('2d');
-            const data = {
+            const graphData = {
+                labels: investmentData.map(item => item.label),
                 datasets: [{
-                    label: 'Investment Value Over Time',
-                    data: investmentData,
-                    borderColor: 'rgba(75, 192, 192, 1)',
-                    borderWidth: 1,
-                    fill: false
+                    label: 'Investment Value ($)',
+                    data: investmentData.map(item => item.value),
+                    borderColor: 'rgba(34, 197, 94, 1)',
+                    fill: false,
+                    tension: 0.1
                 }]
             };
 
             const config = {
                 type: 'line',
-                data: data,
+                data: graphData,
                 options: {
                     responsive: true,
+                    maintainAspectRatio: false,
                     scales: {
                         x: {
-                            type: 'time',
-                            time: {
-                                unit: 'minute',
-                            },
-                            title: {
-                                display: true,
-                                text: 'Time'
-                            }
-                        },
-                        y: {
-                            title: {
-                                display: true,
-                                text: 'Investment Value ($)'
-                            }
+                            type: 'linear',
+                            position: 'bottom'
                         }
                     }
                 }
             };
 
-            if (investmentData.length === 1) {
-                new Chart(ctx, config);
-            } else {
-                ctx.chart.update();
-            }
+            new Chart(ctx, config);
         }
     </script>
 
