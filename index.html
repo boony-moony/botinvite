@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TSMC - Torn Stock Market Calculator</title>
+    <title>Torn Stock Market Calculator (TSMC)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         :root {
@@ -18,20 +18,9 @@
         }
         .card {
             background-color: var(--card-color);
-            padding: 1.5rem;
-            border-radius: 1rem;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
         .button {
             background-color: var(--button-color);
-            text-align: center;
-            padding: 0.75rem;
-            font-weight: bold;
-            border-radius: 0.5rem;
-            transition: background-color 0.3s;
-        }
-        .button:hover {
-            opacity: 0.8;
         }
         /* Theme menu styles */
         #themeMenu {
@@ -58,7 +47,7 @@
 </head>
 <body onload="loadTheme()">
 
-    <div class="max-w-md mx-auto mt-10 p-5 card">
+    <div class="max-w-md mx-auto mt-10 p-5 card rounded-lg shadow-lg">
         <h2 class="text-xl font-bold text-center mb-5">Torn Stock Market Calculator (TSMC)</h2>
 
         <div class="mb-4">
@@ -78,12 +67,12 @@
 
         <button onclick="calculateProfit()" class="w-full button hover:opacity-80 text-white font-bold py-2 px-4 rounded">Calculate</button>
 
-        <div class="mt-5 p-4 card">
+        <div class="mt-5 p-4 card rounded">
             <h3 class="text-lg font-bold">Results</h3>
             <p>Shares Owned: <span id="sharesOwned">0</span></p>
             <p>Total Value: <span id="totalValue">$0</span></p>
             <p>Profit/Loss: <span id="profitLoss" class="text-green-400">$0</span></p>
-            <p>ROI: <span id="roi" class="text-green-400">0.00%</span></p>
+            <p>ROI: <span id="roi">0%</span></p>
         </div>
     </div>
 
@@ -92,8 +81,10 @@
         <div class="theme-card">
             <h3 class="text-lg font-bold mb-3 text-center text-white">Select Theme</h3>
             <button onclick="changeTheme('dark')" class="theme-button w-full mb-2">Dark Mode</button>
-            <button onclick="changeTheme('deepRed')" class="theme-button w-full mb-2">Deep Red</button>
-            <button onclick="changeTheme('deepBlue')" class="theme-button w-full">Deep Blue</button>
+            <button onclick="changeTheme('orange')" class="theme-button w-full mb-2">Orange Theme</button>
+            <button onclick="changeTheme('purple')" class="theme-button w-full mb-2">Purple Theme</button>
+            <button onclick="changeTheme('redTheme')" class="theme-button w-full mb-2">Red Theme</button>
+            <button onclick="changeTheme('blueTheme')" class="theme-button w-full">Blue Theme</button>
         </div>
     </div>
 
@@ -107,9 +98,9 @@
         }
 
         function parseInput(value) {
-            value = value.replace(/,/g, '').toUpperCase().trim();
+            value = value.toUpperCase().trim();
             let multiplier = 1;
-
+            
             if (value.endsWith('T')) multiplier = 1e12;
             else if (value.endsWith('B')) multiplier = 1e9;
             else if (value.endsWith('M')) multiplier = 1e6;
@@ -118,20 +109,18 @@
             return parseFloat(value.replace(/[KMBT]/, '')) * multiplier || 0;
         }
 
-function handleInput(input) {
-    let rawValue = input.value.toUpperCase();
-    if (rawValue === "THEME") {
-        document.getElementById("themeMenu").classList.remove("hidden");
-        input.value = "";
-    } else {
-        let convertedValue = parseInput(rawValue);
-        if (!isNaN(convertedValue) && convertedValue > 0) {
-            input.value = convertedValue.toLocaleString();
+        function handleInput(input) {
+            let rawValue = input.value.toUpperCase();
+            if (rawValue === "THEME") {
+                document.getElementById("themeMenu").classList.remove("hidden");
+                input.value = "";
+            } else {
+                let convertedValue = parseInput(rawValue);
+                if (!isNaN(convertedValue) && convertedValue > 0) {
+                    input.value = convertedValue.toLocaleString();
+                }
+            }
         }
-    }
-}
-
-
 
         function calculateProfit() {
     let cashInvestedRaw = document.getElementById('cashInvested').value.replace(/,/g, '');
@@ -156,38 +145,39 @@ function handleInput(input) {
     document.getElementById('profitLoss').className = profitLoss >= 0 ? 'text-green-400' : 'text-red-400';
     document.getElementById('roi').textContent = `${roi}%`;
 }
-function changeTheme(theme) {
-    localStorage.setItem("selectedTheme", theme);
 
-    if (theme === 'dark') {
-        document.documentElement.style.setProperty('--bg-color', '#1a202c');
-        document.documentElement.style.setProperty('--card-color', '#2d3748');
-        document.documentElement.style.setProperty('--button-color', '#22c55e');
-    } else if (theme === 'orange') {
-        document.documentElement.style.setProperty('--bg-color', '#a34f00');
-        document.documentElement.style.setProperty('--card-color', '#552a00');
-        document.documentElement.style.setProperty('--button-color', '#d97706');
-    } else if (theme === 'purple') {
-        document.documentElement.style.setProperty('--bg-color', '#4b0082');
-        document.documentElement.style.setProperty('--card-color', '#2a004d');
-        document.documentElement.style.setProperty('--button-color', '#8b5cf6');
-    } else if (theme === 'redTheme') {
-        document.documentElement.style.setProperty('--bg-color', '#64002D');
-        document.documentElement.style.setProperty('--card-color', '#8B0031');
-        document.documentElement.style.setProperty('--button-color', '#F50057');
-    } else if (theme === 'blueTheme') {
-        document.documentElement.style.setProperty('--bg-color', '#09193C');
-        document.documentElement.style.setProperty('--card-color', '#0B2C49');
-        document.documentElement.style.setProperty('--button-color', '#1D4ED8');
-    } else if (theme === 'greenTheme') {  // NEW GREEN THEME
-        document.documentElement.style.setProperty('--bg-color', '#0F2F1B');
-        document.documentElement.style.setProperty('--card-color', '#174D27');
-        document.documentElement.style.setProperty('--button-color', '#22C55E');
-    }
+        function changeTheme(theme) {
+            localStorage.setItem("selectedTheme", theme);
 
-    document.getElementById("themeMenu").classList.add("hidden");
-}
-        
+            if (theme === 'dark') {
+                document.documentElement.style.setProperty('--bg-color', '#1a202c');
+                document.documentElement.style.setProperty('--card-color', '#2d3748');
+                document.documentElement.style.setProperty('--button-color', '#22c55e');
+            } else if (theme === 'orange') {
+                document.documentElement.style.setProperty('--bg-color', '#a34f00');
+                document.documentElement.style.setProperty('--card-color', '#552a00');
+                document.documentElement.style.setProperty('--button-color', '#d97706');
+            } else if (theme === 'purple') {
+                document.documentElement.style.setProperty('--bg-color', '#4b0082');
+                document.documentElement.style.setProperty('--card-color', '#2a004d');
+                document.documentElement.style.setProperty('--button-color', '#8b5cf6');
+            } else if (theme === 'redTheme') {
+                document.documentElement.style.setProperty('--bg-color', '#64002D');
+                document.documentElement.style.setProperty('--card-color', '#8B0031');
+                document.documentElement.style.setProperty('--button-color', '#F50057');
+            } else if (theme === 'blueTheme') {
+                document.documentElement.style.setProperty('--bg-color', '#09193C');
+                document.documentElement.style.setProperty('--card-color', '#0B2C49');
+                document.documentElement.style.setProperty('--button-color', '#1D4ED8');
+            }
+            document.getElementById("themeMenu").classList.add("hidden");
+        }
+
+        function loadTheme() {
+            let savedTheme = localStorage.getItem("selectedTheme");
+            if (savedTheme) changeTheme(savedTheme);
+        }
     </script>
+
 </body>
 </html>
