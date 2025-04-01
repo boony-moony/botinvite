@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Stock Market Calculator</title>
+    <title>Torn Stock Market Calculator (TSMC)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         :root {
@@ -22,12 +22,33 @@
         .button {
             background-color: var(--button-color);
         }
+        /* Theme menu styles */
+        #themeMenu {
+            background-color: rgba(0, 0, 0, 0.6);
+        }
+        .theme-card {
+            background-color: var(--card-color);
+            padding: 1.5rem;
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .theme-button {
+            background-color: var(--button-color);
+            text-align: center;
+            padding: 0.75rem;
+            font-weight: bold;
+            border-radius: 0.5rem;
+            transition: background-color 0.3s;
+        }
+        .theme-button:hover {
+            opacity: 0.8;
+        }
     </style>
 </head>
-<body>
+<body onload="loadTheme()">
 
     <div class="max-w-md mx-auto mt-10 p-5 card rounded-lg shadow-lg">
-        <h2 class="text-xl font-bold text-center mb-5">Stock Market Calculator</h2>
+        <h2 class="text-xl font-bold text-center mb-5">Torn Stock Market Calculator (TSMC)</h2>
 
         <div class="mb-4">
             <label class="block text-sm font-medium">Cash Invested ($)</label>
@@ -52,6 +73,16 @@
             <p>Total Value: <span id="totalValue">$0</span></p>
             <p>Profit/Loss: <span id="profitLoss" class="text-green-400">$0</span></p>
             <p>ROI: <span id="roi">0%</span></p>
+        </div>
+    </div>
+
+    <!-- Hidden Theme Menu -->
+    <div id="themeMenu" class="hidden fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+        <div class="theme-card">
+            <h3 class="text-lg font-bold mb-3 text-center text-white">Select Theme</h3>
+            <button onclick="changeTheme('dark')" class="theme-button w-full mb-2">Dark Mode</button>
+            <button onclick="changeTheme('orange')" class="theme-button w-full mb-2">Orange Theme</button>
+            <button onclick="changeTheme('purple')" class="theme-button w-full">Purple Theme</button>
         </div>
     </div>
 
@@ -111,6 +142,30 @@
             document.getElementById('profitLoss').textContent = `$${formatNumber(profitLoss)}`;
             document.getElementById('profitLoss').className = profitLoss >= 0 ? 'text-green-400' : 'text-red-400';
             document.getElementById('roi').textContent = `${roi}%`;
+        }
+
+        function changeTheme(theme) {
+            localStorage.setItem("selectedTheme", theme);
+
+            if (theme === 'dark') {
+                document.documentElement.style.setProperty('--bg-color', '#1a202c');
+                document.documentElement.style.setProperty('--card-color', '#2d3748');
+                document.documentElement.style.setProperty('--button-color', '#22c55e');
+            } else if (theme === 'orange') {
+                document.documentElement.style.setProperty('--bg-color', '#a34f00');
+                document.documentElement.style.setProperty('--card-color', '#552a00');
+                document.documentElement.style.setProperty('--button-color', '#d97706');
+            } else if (theme === 'purple') {
+                document.documentElement.style.setProperty('--bg-color', '#4b0082');
+                document.documentElement.style.setProperty('--card-color', '#2a004d');
+                document.documentElement.style.setProperty('--button-color', '#8b5cf6');
+            }
+            document.getElementById("themeMenu").classList.add("hidden");
+        }
+
+        function loadTheme() {
+            let savedTheme = localStorage.getItem("selectedTheme");
+            if (savedTheme) changeTheme(savedTheme);
         }
     </script>
 
