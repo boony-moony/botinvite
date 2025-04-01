@@ -52,7 +52,7 @@
 
         <div class="mb-4">
             <label class="block text-sm font-medium">Cash Invested ($)</label>
-            <input type="text" id="cashInvested" class="w-full p-2 mt-1 bg-gray-700 text-white border border-gray-600 rounded" placeholder="Enter cash (e.g., 2M, 5B)" onblur="handleBlur(this)">
+            <input type="text" id="cashInvested" class="w-full p-2 mt-1 bg-gray-700 text-white border border-gray-600 rounded" placeholder="Enter cash (e.g., 2M, 5B)" oninput="handleCashInput(this)">
         </div>
 
         <div class="mb-4">
@@ -111,9 +111,23 @@
             } else if (value.endsWith('k')) {
                 multiplier = 1e3;  // Thousand
                 value = value.slice(0, -1);  // Remove the 'k'
+            } else if (value.endsWith('t')) {
+                multiplier = 1e12;  // Trillion
+                value = value.slice(0, -1);  // Remove the 't'
             }
 
             return parseFloat(value) * multiplier || 0;
+        }
+
+        function handleCashInput(input) {
+            let rawValue = input.value.trim();
+            let convertedValue = parseInput(rawValue);
+
+            if (!isNaN(convertedValue) && convertedValue > 0) {
+                input.value = formatNumber(convertedValue);  // Format and update the input field
+            } else {
+                input.value = rawValue;  // Keep the raw value until it's valid
+            }
         }
 
         function handleBlur(input) {
