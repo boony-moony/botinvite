@@ -6,7 +6,6 @@
     <title>Stock Market Calculator</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* Default (Dark Mode) */
         :root {
             --bg-color: #1a202c;
             --card-color: #2d3748;
@@ -25,7 +24,7 @@
         }
     </style>
 </head>
-<body>
+<body onload="loadTheme()">
 
     <div class="max-w-md mx-auto mt-10 p-5 card rounded-lg shadow-lg">
         <h2 class="text-xl font-bold text-center mb-5">Stock Market Calculator</h2>
@@ -61,8 +60,8 @@
         <div class="bg-white p-6 rounded shadow-lg">
             <h3 class="text-lg font-bold mb-3">Select Theme</h3>
             <button onclick="changeTheme('dark')" class="block w-full mb-2 p-2 bg-gray-800 text-white rounded">Dark Mode</button>
-            <button onclick="changeTheme('orange')" class="block w-full mb-2 p-2 bg-orange-600 text-white rounded">Orange Theme</button>
-            <button onclick="changeTheme('purple')" class="block w-full p-2 bg-purple-600 text-white rounded">Purple Theme</button>
+            <button onclick="changeTheme('orange')" class="block w-full mb-2 p-2 bg-orange-700 text-white rounded">Orange Theme</button>
+            <button onclick="changeTheme('purple')" class="block w-full p-2 bg-purple-700 text-white rounded">Purple Theme</button>
         </div>
     </div>
 
@@ -126,23 +125,27 @@
         }
 
         function changeTheme(theme) {
+            localStorage.setItem("selectedTheme", theme);
+
             if (theme === 'dark') {
                 document.documentElement.style.setProperty('--bg-color', '#1a202c');
                 document.documentElement.style.setProperty('--card-color', '#2d3748');
-                document.documentElement.style.setProperty('--text-color', '#ffffff');
                 document.documentElement.style.setProperty('--button-color', '#22c55e');
             } else if (theme === 'orange') {
-                document.documentElement.style.setProperty('--bg-color', '#ff6b00');
-                document.documentElement.style.setProperty('--card-color', '#662200');
-                document.documentElement.style.setProperty('--text-color', '#ffffff');
-                document.documentElement.style.setProperty('--button-color', '#ff9500');
+                document.documentElement.style.setProperty('--bg-color', '#a34f00');
+                document.documentElement.style.setProperty('--card-color', '#552a00');
+                document.documentElement.style.setProperty('--button-color', '#d97706');
             } else if (theme === 'purple') {
-                document.documentElement.style.setProperty('--bg-color', '#6a0dad');
-                document.documentElement.style.setProperty('--card-color', '#330066');
-                document.documentElement.style.setProperty('--text-color', '#ffffff');
-                document.documentElement.style.setProperty('--button-color', '#9b30ff');
+                document.documentElement.style.setProperty('--bg-color', '#4b0082');
+                document.documentElement.style.setProperty('--card-color', '#2a004d');
+                document.documentElement.style.setProperty('--button-color', '#8b5cf6');
             }
             document.getElementById("themeMenu").classList.add("hidden");
+        }
+
+        function loadTheme() {
+            let savedTheme = localStorage.getItem("selectedTheme");
+            if (savedTheme) changeTheme(savedTheme);
         }
     </script>
 
