@@ -1,161 +1,153 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Stock Market Calculator</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <style>
-    :root {
-      --bg-color: #1a202c;
-      --card-color: #2d3748;
-      --text-color: #ffffff;
-      --button-color: #22c55e;
-    }
-    body {
-      background-color: var(--bg-color);
-      color: var(--text-color);
-    }
-    .card {
-      background-color: var(--card-color);
-    }
-    .button {
-      background-color: var(--button-color);
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stock Market Calculator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root {
+            --bg-color: #1a202c;
+            --card-color: #2d3748;
+            --text-color: #ffffff;
+            --button-color: #22c55e;
+        }
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+        }
+        .card {
+            background-color: var(--card-color);
+        }
+        .button {
+            background-color: var(--button-color);
+        }
+    </style>
 </head>
 <body onload="loadTheme()">
 
-  <div class="max-w-md mx-auto mt-10 p-5 card rounded-lg shadow-lg">
-    <h2 class="text-xl font-bold text-center mb-5">Stock Market Calculator</h2>
+    <div class="max-w-md mx-auto mt-10 p-5 card rounded-lg shadow-lg">
+        <h2 class="text-xl font-bold text-center mb-5">Stock Market Calculator</h2>
 
-    <!-- Cash Invested field: supports shorthand and localized formatting -->
-    <div class="mb-4">
-      <label class="block text-sm font-medium">Cash Invested ($)</label>
-      <input type="text" id="cashInvested" class="w-full p-2 mt-1 bg-gray-700 text-white border border-gray-600 rounded" 
-             placeholder="Enter cash (e.g., 2M, 5B or 20000,90)" oninput="handleCashInput(this)" onblur="formatInvestedField(this)">
+        <div class="mb-4">
+            <label class="block text-sm font-medium">Cash Invested ($)</label>
+            <input type="text" id="cashInvested" class="w-full p-2 mt-1 bg-gray-700 text-white border border-gray-600 rounded" placeholder="Enter cash (e.g., 2M, 5B)" oninput="handleInput(this)">
+        </div>
+
+        <div class="mb-4">
+            <label class="block text-sm font-medium">Purchase Price Per Share ($)</label>
+            <input type="number" id="purchasePrice" class="w-full p-2 mt-1 bg-gray-700 text-white border border-gray-600 rounded" placeholder="Enter purchase price">
+        </div>
+
+        <div class="mb-4">
+            <label class="block text-sm font-medium">Current Price Per Share ($)</label>
+            <input type="number" id="currentPrice" class="w-full p-2 mt-1 bg-gray-700 text-white border border-gray-600 rounded" placeholder="Enter current price">
+        </div>
+
+        <button onclick="calculateProfit()" class="w-full button hover:opacity-80 text-white font-bold py-2 px-4 rounded">Calculate</button>
+
+        <div class="mt-5 p-4 card rounded">
+            <h3 class="text-lg font-bold">Results</h3>
+            <p>Shares Owned: <span id="sharesOwned">0</span></p>
+            <p>Total Value: <span id="totalValue">$0</span></p>
+            <p>Profit/Loss: <span id="profitLoss" class="text-green-400">$0</span></p>
+            <p>Percentage Change: <span id="percentageChange" class="text-green-400">0.00%</span></p>
+        </div>
     </div>
 
-    <!-- Purchase Price and Current Price fields -->
-    <div class="mb-4">
-      <label class="block text-sm font-medium">Purchase Price Per Share ($)</label>
-      <input type="text" id="purchasePrice" class="w-full p-2 mt-1 bg-gray-700 text-white border border-gray-600 rounded" 
-             placeholder="Enter purchase price">
+    <!-- Hidden Theme Menu -->
+    <div id="themeMenu" class="hidden fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+        <div class="bg-white p-6 rounded shadow-lg">
+            <h3 class="text-lg font-bold mb-3">Select Theme</h3>
+            <button onclick="changeTheme('dark')" class="block w-full mb-2 p-2 bg-gray-800 text-white rounded">Dark Mode</button>
+            <button onclick="changeTheme('orange')" class="block w-full mb-2 p-2 bg-orange-700 text-white rounded">Orange Theme</button>
+            <button onclick="changeTheme('purple')" class="block w-full p-2 bg-purple-700 text-white rounded">Purple Theme</button>
+        </div>
     </div>
 
-    <div class="mb-4">
-      <label class="block text-sm font-medium">Current Price Per Share ($)</label>
-      <input type="text" id="currentPrice" class="w-full p-2 mt-1 bg-gray-700 text-white border border-gray-600 rounded" 
-             placeholder="Enter current price">
-    </div>
-
-    <button onclick="calculateProfit()" class="w-full button hover:opacity-80 text-white font-bold py-2 px-4 rounded">Calculate</button>
-
-    <div class="mt-5 p-4 card rounded">
-      <h3 class="text-lg font-bold">Results</h3>
-      <p>Shares Owned: <span id="sharesOwned">0</span></p>
-      <p>Total Value: <span id="totalValue">$0</span></p>
-      <p>Profit/Loss: <span id="profitLoss" class="text-green-400">$0</span></p>
-      <p>Percentage Change: <span id="percentageChange" class="text-green-400">0.00%</span></p>
-    </div>
-  </div>
-
-  <script>
-    // Format a number using the 'de-DE' locale (which uses dot for thousands and comma for decimals)
-    function formatNumberWithDe(num) {
-      return num.toLocaleString('de-DE');
-    }
-
-    // Parse the Cash Invested field value.
-    function parseInvestedInput(value) {
-      value = value.trim().toLowerCase();
-      let multiplier = 1;
-
-      // Handle shorthand notations (k, m, b, t)
-      if (/[kmbt]$/.test(value)) {
-        if (value.endsWith('m')) {
-          multiplier = 1e6;
-          value = value.slice(0, -1);
-        } else if (value.endsWith('b')) {
-          multiplier = 1e9;
-          value = value.slice(0, -1);
-        } else if (value.endsWith('k')) {
-          multiplier = 1e3;
-          value = value.slice(0, -1);
-        } else if (value.endsWith('t')) {
-          multiplier = 1e12;
-          value = value.slice(0, -1);
+    <script>
+        function formatNumber(num) {
+            if (num >= 1e12) return (num / 1e12).toFixed(2) + 'T';
+            if (num >= 1e9) return (num / 1e9).toFixed(2) + 'B';
+            if (num >= 1e6) return (num / 1e6).toFixed(2) + 'M';
+            if (num >= 1e3) return (num / 1e3).toFixed(2) + 'K';
+            return num.toFixed(2);
         }
 
-        // Replace any commas with dots for parsing decimals
-        value = value.replace(',', '.');
-        let num = parseFloat(value);
-        return isNaN(num) ? 0 : num * multiplier;
-      } else {
-        // If no shorthand, just parse the number directly
-        let normalized = value.replace(/\./g, '').replace(',', '.');
-        let num = parseFloat(normalized);
-        return isNaN(num) ? 0 : num;
-      }
-    }
+        function parseInput(value) {
+            value = value.toUpperCase().trim();
+            let multiplier = 1;
+            
+            if (value.endsWith('T')) multiplier = 1e12;
+            else if (value.endsWith('B')) multiplier = 1e9;
+            else if (value.endsWith('M')) multiplier = 1e6;
+            else if (value.endsWith('K')) multiplier = 1e3;
 
-    // When typing in the Cash Invested field, allow valid characters.
-    function handleCashInput(input) {
-      // Allow digits, comma, dot, and shorthand letters (k, m, b, t)
-      input.value = input.value.replace(/[^0-9,\.kmbt]/gi, '');
-    }
+            return parseFloat(value.replace(/[KMBT]/, '')) * multiplier || 0;
+        }
 
-    // On blur, format the Cash Invested field to the desired format.
-    function formatInvestedField(input) {
-      let rawValue = input.value;
-      if (!rawValue) return;
-      
-      let num = parseInvestedInput(rawValue);
-      if (num === 0) return;
+        function handleInput(input) {
+            let rawValue = input.value.toUpperCase();
+            if (rawValue === "THEME") {
+                document.getElementById("themeMenu").classList.remove("hidden");
+                input.value = "";
+            } else {
+                let convertedValue = parseInput(rawValue);
+                if (!isNaN(convertedValue) && convertedValue > 0) {
+                    input.value = convertedValue.toLocaleString();
+                }
+            }
+        }
 
-      // Format the number using de-DE locale (thousands separated by dot, decimals by comma)
-      input.value = formatNumberWithDe(num);
-    }
+        function calculateProfit() {
+            let cashInvestedRaw = document.getElementById('cashInvested').value.replace(/,/g, '');
+            let purchasePrice = parseFloat(document.getElementById('purchasePrice').value);
+            let currentPrice = parseFloat(document.getElementById('currentPrice').value);
 
-    // For Purchase and Current Price fields, parse standard input:
-    function parseStandardInput(value) {
-      value = value.trim();
-      let normalized = value.replace(/\./g, '').replace(',', '.');
-      return parseFloat(normalized);
-    }
+            let cashInvested = parseInput(cashInvestedRaw);
 
-    function calculateProfit() {
-      let cashInvestedRaw = document.getElementById('cashInvested').value;
-      let purchasePriceRaw = document.getElementById('purchasePrice').value;
-      let currentPriceRaw = document.getElementById('currentPrice').value;
-      
-      let cashInvested = parseInvestedInput(cashInvestedRaw);
-      let purchasePrice = parseStandardInput(purchasePriceRaw);
-      let currentPrice = parseStandardInput(currentPriceRaw);
+            if (isNaN(cashInvested) || isNaN(purchasePrice) || isNaN(currentPrice) || purchasePrice <= 0) {
+                alert('Please enter valid numbers');
+                return;
+            }
 
-      if (isNaN(cashInvested) || isNaN(purchasePrice) || isNaN(currentPrice) || purchasePrice <= 0) {
-        alert('Please enter valid numbers');
-        return;
-      }
+            let sharesOwned = cashInvested / purchasePrice;
+            let totalValue = sharesOwned * currentPrice;
+            let profitLoss = totalValue - cashInvested;
+            let percentageChange = ((profitLoss / cashInvested) * 100).toFixed(2);
 
-      let sharesOwned = cashInvested / purchasePrice;
-      let totalValue = sharesOwned * currentPrice;
-      let profitLoss = totalValue - cashInvested;
-      let percentageChange = ((profitLoss / cashInvested) * 100).toFixed(2);
+            document.getElementById('sharesOwned').textContent = formatNumber(sharesOwned);
+            document.getElementById('totalValue').textContent = `$${formatNumber(totalValue)}`;
+            document.getElementById('profitLoss').textContent = `$${formatNumber(profitLoss)}`;
+            document.getElementById('profitLoss').className = profitLoss >= 0 ? 'text-green-400' : 'text-red-400';
+            document.getElementById('percentageChange').textContent = `${percentageChange}%`;
+            document.getElementById('percentageChange').className = profitLoss >= 0 ? 'text-green-400' : 'text-red-400';
+        }
 
-      document.getElementById('sharesOwned').textContent = formatNumberWithDe(sharesOwned);
-      document.getElementById('totalValue').textContent = '$' + formatNumberWithDe(totalValue);
-      document.getElementById('profitLoss').textContent = '$' + formatNumberWithDe(profitLoss);
-      document.getElementById('profitLoss').className = profitLoss >= 0 ? 'text-green-400' : 'text-red-400';
-      document.getElementById('percentageChange').textContent = percentageChange + '%';
-      document.getElementById('percentageChange').className = profitLoss >= 0 ? 'text-green-400' : 'text-red-400';
-    }
+        function changeTheme(theme) {
+            localStorage.setItem("selectedTheme", theme);
 
-    function loadTheme() {
-      let savedTheme = localStorage.getItem("selectedTheme");
-      if (savedTheme) changeTheme(savedTheme);
-    }
-  </script>
+            if (theme === 'dark') {
+                document.documentElement.style.setProperty('--bg-color', '#1a202c');
+                document.documentElement.style.setProperty('--card-color', '#2d3748');
+                document.documentElement.style.setProperty('--button-color', '#22c55e');
+            } else if (theme === 'orange') {
+                document.documentElement.style.setProperty('--bg-color', '#a34f00');
+                document.documentElement.style.setProperty('--card-color', '#552a00');
+                document.documentElement.style.setProperty('--button-color', '#d97706');
+            } else if (theme === 'purple') {
+                document.documentElement.style.setProperty('--bg-color', '#4b0082');
+                document.documentElement.style.setProperty('--card-color', '#2a004d');
+                document.documentElement.style.setProperty('--button-color', '#8b5cf6');
+            }
+            document.getElementById("themeMenu").classList.add("hidden");
+        }
+
+        function loadTheme() {
+            let savedTheme = localStorage.getItem("selectedTheme");
+            if (savedTheme) changeTheme(savedTheme);
+        }
+    </script>
 
 </body>
 </html>
