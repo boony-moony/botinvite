@@ -22,33 +22,15 @@
         .button {
             background-color: var(--button-color);
         }
-        /* Theme menu styles */
         #themeMenu {
             background-color: rgba(0, 0, 0, 0.6);
-        }
-        .theme-card {
-            background-color: var(--card-color);
-            padding: 1.5rem;
-            border-radius: 1rem;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-        .theme-button {
-            background-color: var(--button-color);
-            text-align: center;
-            padding: 0.75rem;
-            font-weight: bold;
-            border-radius: 0.5rem;
-            transition: background-color 0.3s;
-        }
-        .theme-button:hover {
-            opacity: 0.8;
         }
     </style>
 </head>
 <body onload="loadTheme()">
 
     <div class="max-w-md mx-auto mt-10 p-5 card rounded-lg shadow-lg">
-        <h2 class="text-xl font-bold text-center mb-5">Torn Stock Market Calculator (TSMC)</h2>
+        <h2 class="text-xl font-bold text-center mb-5">Torn Stock Market Calculator</h2>
 
         <div class="mb-4">
             <label class="block text-sm font-medium">Cash Invested ($)</label>
@@ -72,19 +54,7 @@
             <p>Shares Owned: <span id="sharesOwned">0</span></p>
             <p>Total Value: <span id="totalValue">$0</span></p>
             <p>Profit/Loss: <span id="profitLoss" class="text-green-400">$0</span></p>
-            <p>ROI: <span id="roi">0%</span></p>
-        </div>
-    </div>
-
-    <!-- Hidden Theme Menu -->
-    <div id="themeMenu" class="hidden fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
-        <div class="theme-card">
-            <h3 class="text-lg font-bold mb-3 text-center text-white">Select Theme</h3>
-            <button onclick="changeTheme('dark')" class="theme-button w-full mb-2">Dark Mode</button>
-            <button onclick="changeTheme('orange')" class="theme-button w-full mb-2">Orange Theme</button>
-            <button onclick="changeTheme('purple')" class="theme-button w-full mb-2">Purple Theme</button>
-            <button onclick="changeTheme('redTheme')" class="theme-button w-full mb-2">Red Theme</button>
-            <button onclick="changeTheme('blueTheme')" class="theme-button w-full">Blue Theme</button>
+            <p>ROI: <span id="roi" class="text-green-400">0.00%</span></p>
         </div>
     </div>
 
@@ -98,7 +68,7 @@
         }
 
         function parseInput(value) {
-            value = value.toUpperCase().trim();
+            value = value.toUpperCase().trim().replace(',', '.');
             let multiplier = 1;
             
             if (value.endsWith('T')) multiplier = 1e12;
@@ -111,14 +81,9 @@
 
         function handleInput(input) {
             let rawValue = input.value.toUpperCase();
-            if (rawValue === "THEME") {
-                document.getElementById("themeMenu").classList.remove("hidden");
-                input.value = "";
-            } else {
-                let convertedValue = parseInput(rawValue);
-                if (!isNaN(convertedValue) && convertedValue > 0) {
-                    input.value = convertedValue.toLocaleString();
-                }
+            let convertedValue = parseInput(rawValue);
+            if (!isNaN(convertedValue) && convertedValue > 0) {
+                input.value = convertedValue.toLocaleString();
             }
         }
 
@@ -144,33 +109,25 @@
             document.getElementById('profitLoss').textContent = `$${formatNumber(profitLoss)}`;
             document.getElementById('profitLoss').className = profitLoss >= 0 ? 'text-green-400' : 'text-red-400';
             document.getElementById('roi').textContent = `${roi}%`;
+            document.getElementById('roi').className = profitLoss >= 0 ? 'text-green-400' : 'text-red-400';
         }
 
         function changeTheme(theme) {
             localStorage.setItem("selectedTheme", theme);
 
-            if (theme === 'dark') {
+            if (theme === 'deep-red') {
+                document.documentElement.style.setProperty('--bg-color', '#64002D');
+                document.documentElement.style.setProperty('--card-color', '#320015');
+                document.documentElement.style.setProperty('--button-color', '#A00050');
+            } else if (theme === 'deep-blue') {
+                document.documentElement.style.setProperty('--bg-color', '#09193C');
+                document.documentElement.style.setProperty('--card-color', '#040E21');
+                document.documentElement.style.setProperty('--button-color', '#123A7F');
+            } else {
                 document.documentElement.style.setProperty('--bg-color', '#1a202c');
                 document.documentElement.style.setProperty('--card-color', '#2d3748');
                 document.documentElement.style.setProperty('--button-color', '#22c55e');
-            } else if (theme === 'orange') {
-                document.documentElement.style.setProperty('--bg-color', '#a34f00');
-                document.documentElement.style.setProperty('--card-color', '#552a00');
-                document.documentElement.style.setProperty('--button-color', '#d97706');
-            } else if (theme === 'purple') {
-                document.documentElement.style.setProperty('--bg-color', '#4b0082');
-                document.documentElement.style.setProperty('--card-color', '#2a004d');
-                document.documentElement.style.setProperty('--button-color', '#8b5cf6');
-            } else if (theme === 'redTheme') {
-                document.documentElement.style.setProperty('--bg-color', '#64002D');
-                document.documentElement.style.setProperty('--card-color', '#8B0031');
-                document.documentElement.style.setProperty('--button-color', '#F50057');
-            } else if (theme === 'blueTheme') {
-                document.documentElement.style.setProperty('--bg-color', '#09193C');
-                document.documentElement.style.setProperty('--card-color', '#0B2C49');
-                document.documentElement.style.setProperty('--button-color', '#1D4ED8');
             }
-            document.getElementById("themeMenu").classList.add("hidden");
         }
 
         function loadTheme() {
