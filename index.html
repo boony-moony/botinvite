@@ -133,7 +133,7 @@
       let rawValue = input.value.trim();
       if (rawValue === "") return;
 
-      // Check if the last character is one of the shorthand letters (k, m, b, t)
+      // Only apply shorthand conversions for "k", "m", "b", "t"
       let lastChar = rawValue.slice(-1).toLowerCase();
       if ("kmbt".includes(lastChar)) {
         let convertedValue = parseInput(rawValue);
@@ -141,7 +141,7 @@
           input.value = formatNumber(convertedValue); // Format number with commas
         }
       } else {
-        // Allow for regular input with numbers or decimals, no auto-formatting here
+        // Allow for regular input with numbers or decimals
         input.value = rawValue.replace(/,/g, '');  // Remove commas if any
       }
     }
@@ -154,6 +154,7 @@
 
       let cashInvested = parseInput(cashInvestedRaw);
 
+      // Allow for valid decimals or numbers in other fields
       if (isNaN(cashInvested) || isNaN(purchasePrice) || isNaN(currentPrice) || purchasePrice <= 0) {
         alert('Please enter valid numbers');
         return;
