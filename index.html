@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -11,11 +10,6 @@
 
     <div class="max-w-md mx-auto mt-10 p-5 bg-gray-800 rounded-lg shadow-lg">
         <h2 class="text-xl font-bold text-center mb-5">Stock Market Calculator</h2>
-
-        <div class="mb-4">
-            <label class="block text-sm font-medium text-gray-300">Stock Name</label>
-            <input type="text" id="stockName" class="w-full p-2 mt-1 bg-gray-700 text-white border border-gray-600 rounded" placeholder="Enter stock name">
-        </div>
 
         <div class="mb-4">
             <label class="block text-sm font-medium text-gray-300">Quantity Owned</label>
@@ -36,13 +30,21 @@
 
         <div class="mt-5 p-4 bg-gray-700 rounded">
             <h3 class="text-lg font-bold">Results</h3>
-            <p>Total Value: <span id="totalValue">$0.00</span></p>
-            <p>Profit/Loss: <span id="profitLoss" class="text-green-400">$0.00</span></p>
+            <p>Total Value: <span id="totalValue">$0</span></p>
+            <p>Profit/Loss: <span id="profitLoss" class="text-green-400">$0</span></p>
             <p>Percentage Change: <span id="percentageChange" class="text-green-400">0.00%</span></p>
         </div>
     </div>
 
     <script>
+        function formatNumber(num) {
+            if (num >= 1e12) return (num / 1e12).toFixed(2) + 'T';
+            if (num >= 1e9) return (num / 1e9).toFixed(2) + 'B';
+            if (num >= 1e6) return (num / 1e6).toFixed(2) + 'M';
+            if (num >= 1e3) return (num / 1e3).toFixed(2) + 'K';
+            return num.toFixed(2);
+        }
+
         function calculateProfit() {
             let quantity = parseFloat(document.getElementById('quantity').value);
             let purchasePrice = parseFloat(document.getElementById('purchasePrice').value);
@@ -58,8 +60,8 @@
             let profitLoss = totalValue - totalCost;
             let percentageChange = ((profitLoss / totalCost) * 100).toFixed(2);
 
-            document.getElementById('totalValue').textContent = `$${totalValue.toFixed(2)}`;
-            document.getElementById('profitLoss').textContent = `$${profitLoss.toFixed(2)}`;
+            document.getElementById('totalValue').textContent = `$${formatNumber(totalValue)}`;
+            document.getElementById('profitLoss').textContent = `$${formatNumber(profitLoss)}`;
             document.getElementById('profitLoss').className = profitLoss >= 0 ? 'text-green-400' : 'text-red-400';
             document.getElementById('percentageChange').textContent = `${percentageChange}%`;
             document.getElementById('percentageChange').className = profitLoss >= 0 ? 'text-green-400' : 'text-red-400';
