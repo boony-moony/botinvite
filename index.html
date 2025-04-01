@@ -12,17 +12,17 @@
         <h2 class="text-xl font-bold text-center mb-5">Stock Market Calculator</h2>
 
         <div class="mb-4">
-            <label class="block text-sm font-medium text-gray-300">Quantity Owned</label>
-            <input type="number" id="quantity" class="w-full p-2 mt-1 bg-gray-700 text-white border border-gray-600 rounded" placeholder="Enter quantity">
+            <label class="block text-sm font-medium text-gray-300">Cash Invested ($)</label>
+            <input type="number" id="cashInvested" class="w-full p-2 mt-1 bg-gray-700 text-white border border-gray-600 rounded" placeholder="Enter cash amount">
         </div>
 
         <div class="mb-4">
-            <label class="block text-sm font-medium text-gray-300">Purchase Price ($)</label>
+            <label class="block text-sm font-medium text-gray-300">Purchase Price Per Share ($)</label>
             <input type="number" id="purchasePrice" class="w-full p-2 mt-1 bg-gray-700 text-white border border-gray-600 rounded" placeholder="Enter purchase price">
         </div>
 
         <div class="mb-4">
-            <label class="block text-sm font-medium text-gray-300">Current Price ($)</label>
+            <label class="block text-sm font-medium text-gray-300">Current Price Per Share ($)</label>
             <input type="number" id="currentPrice" class="w-full p-2 mt-1 bg-gray-700 text-white border border-gray-600 rounded" placeholder="Enter current price">
         </div>
 
@@ -30,6 +30,7 @@
 
         <div class="mt-5 p-4 bg-gray-700 rounded">
             <h3 class="text-lg font-bold">Results</h3>
+            <p>Shares Owned: <span id="sharesOwned">0</span></p>
             <p>Total Value: <span id="totalValue">$0</span></p>
             <p>Profit/Loss: <span id="profitLoss" class="text-green-400">$0</span></p>
             <p>Percentage Change: <span id="percentageChange" class="text-green-400">0.00%</span></p>
@@ -46,20 +47,21 @@
         }
 
         function calculateProfit() {
-            let quantity = parseFloat(document.getElementById('quantity').value);
+            let cashInvested = parseFloat(document.getElementById('cashInvested').value);
             let purchasePrice = parseFloat(document.getElementById('purchasePrice').value);
             let currentPrice = parseFloat(document.getElementById('currentPrice').value);
 
-            if (isNaN(quantity) || isNaN(purchasePrice) || isNaN(currentPrice)) {
+            if (isNaN(cashInvested) || isNaN(purchasePrice) || isNaN(currentPrice) || purchasePrice <= 0) {
                 alert('Please enter valid numbers');
                 return;
             }
 
-            let totalValue = quantity * currentPrice;
-            let totalCost = quantity * purchasePrice;
-            let profitLoss = totalValue - totalCost;
-            let percentageChange = ((profitLoss / totalCost) * 100).toFixed(2);
+            let sharesOwned = cashInvested / purchasePrice;
+            let totalValue = sharesOwned * currentPrice;
+            let profitLoss = totalValue - cashInvested;
+            let percentageChange = ((profitLoss / cashInvested) * 100).toFixed(2);
 
+            document.getElementById('sharesOwned').textContent = formatNumber(sharesOwned);
             document.getElementById('totalValue').textContent = `$${formatNumber(totalValue)}`;
             document.getElementById('profitLoss').textContent = `$${formatNumber(profitLoss)}`;
             document.getElementById('profitLoss').className = profitLoss >= 0 ? 'text-green-400' : 'text-red-400';
