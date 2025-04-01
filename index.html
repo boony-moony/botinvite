@@ -22,27 +22,6 @@
     .button {
       background-color: var(--button-color);
     }
-    /* Theme menu styles */
-    #themeMenu {
-      background-color: rgba(0, 0, 0, 0.6);
-    }
-    .theme-card {
-      background-color: var(--card-color);
-      padding: 1.5rem;
-      border-radius: 1rem;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    }
-    .theme-button {
-      background-color: var(--button-color);
-      text-align: center;
-      padding: 0.75rem;
-      font-weight: bold;
-      border-radius: 0.5rem;
-      transition: background-color 0.3s;
-    }
-    .theme-button:hover {
-      opacity: 0.8;
-    }
   </style>
 </head>
 <body onload="loadTheme()">
@@ -81,16 +60,6 @@
     </div>
   </div>
 
-  <!-- Hidden Theme Menu -->
-  <div id="themeMenu" class="hidden fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
-    <div class="theme-card">
-      <h3 class="text-lg font-bold mb-3 text-center text-white">Select Theme</h3>
-      <button onclick="changeTheme('dark')" class="theme-button w-full mb-2">Dark Mode</button>
-      <button onclick="changeTheme('orange')" class="theme-button w-full mb-2">Orange Theme</button>
-      <button onclick="changeTheme('purple')" class="theme-button w-full">Purple Theme</button>
-    </div>
-  </div>
-
   <script>
     // Format a number using the 'de-DE' locale (which uses dot for thousands and comma for decimals)
     function formatNumberWithDe(num) {
@@ -98,10 +67,11 @@
     }
 
     // Parse the Cash Invested field value.
-    // If a shorthand letter (k, m, b, t) is present, use it; otherwise, assume a localized number (e.g., "20000,90")
     function parseInvestedInput(value) {
       value = value.trim().toLowerCase();
       let multiplier = 1;
+
+      // Handle shorthand notations (k, m, b, t)
       if (/[kmbt]$/.test(value)) {
         if (value.endsWith('m')) {
           multiplier = 1e6;
@@ -116,13 +86,13 @@
           multiplier = 1e12;
           value = value.slice(0, -1);
         }
-        // Replace any comma with a dot for parsing decimals
+
+        // Replace any commas with dots for parsing decimals
         value = value.replace(',', '.');
         let num = parseFloat(value);
         return isNaN(num) ? 0 : num * multiplier;
       } else {
-        // Assume the input is in localized format like "20000,90" (no thousand separator yet)
-        // Remove any dots (if the user typed them) then replace comma with dot for parseFloat
+        // If no shorthand, just parse the number directly
         let normalized = value.replace(/\./g, '').replace(',', '.');
         let num = parseFloat(normalized);
         return isNaN(num) ? 0 : num;
@@ -139,8 +109,10 @@
     function formatInvestedField(input) {
       let rawValue = input.value;
       if (!rawValue) return;
+      
       let num = parseInvestedInput(rawValue);
       if (num === 0) return;
+
       // Format the number using de-DE locale (thousands separated by dot, decimals by comma)
       input.value = formatNumberWithDe(num);
     }
@@ -148,7 +120,6 @@
     // For Purchase and Current Price fields, parse standard input:
     function parseStandardInput(value) {
       value = value.trim();
-      // Remove thousand separators (if any) and replace comma with dot
       let normalized = value.replace(/\./g, '').replace(',', '.');
       return parseFloat(normalized);
     }
@@ -178,24 +149,6 @@
       document.getElementById('profitLoss').className = profitLoss >= 0 ? 'text-green-400' : 'text-red-400';
       document.getElementById('percentageChange').textContent = percentageChange + '%';
       document.getElementById('percentageChange').className = profitLoss >= 0 ? 'text-green-400' : 'text-red-400';
-    }
-
-    function changeTheme(theme) {
-      localStorage.setItem("selectedTheme", theme);
-      if (theme === 'dark') {
-        document.documentElement.style.setProperty('--bg-color', '#1a202c');
-        document.documentElement.style.setProperty('--card-color', '#2d3748');
-        document.documentElement.style.setProperty('--button-color', '#22c55e');
-      } else if (theme === 'orange') {
-        document.documentElement.style.setProperty('--bg-color', '#a34f00');
-        document.documentElement.style.setProperty('--card-color', '#552a00');
-        document.documentElement.style.setProperty('--button-color', '#d97706');
-      } else if (theme === 'purple') {
-        document.documentElement.style.setProperty('--bg-color', '#4b0082');
-        document.documentElement.style.setProperty('--card-color', '#2a004d');
-        document.documentElement.style.setProperty('--button-color', '#8b5cf6');
-      }
-      document.getElementById("themeMenu").classList.add("hidden");
     }
 
     function loadTheme() {
