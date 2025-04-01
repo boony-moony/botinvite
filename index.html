@@ -52,7 +52,7 @@
 
         <div class="mb-4">
             <label class="block text-sm font-medium">Cash Invested ($)</label>
-            <input type="text" id="cashInvested" class="w-full p-2 mt-1 bg-gray-700 text-white border border-gray-600 rounded" placeholder="Enter cash (e.g., 2M, 5B)" oninput="handleInput(this)">
+            <input type="text" id="cashInvested" class="w-full p-2 mt-1 bg-gray-700 text-white border border-gray-600 rounded" placeholder="Enter cash (e.g., 2M, 5B)" oninput="handleInput(this)" onpaste="handlePaste(event, this)">
         </div>
 
         <div class="mb-4">
@@ -104,20 +104,21 @@
             else if (value.endsWith('M')) multiplier = 1e6;
             else if (value.endsWith('K')) multiplier = 1e3;
 
-            return parseFloat(value.replace(/[KMBT]/, '')) * multiplier || 0;
+            return parseFloat(value.replace(/[KMBT]/, '').replace(/,/g, '').replace(/\./g, '')) * multiplier || 0;
         }
 
         function handleInput(input) {
-            let rawValue = input.value.toUpperCase();
-            if (rawValue === "THEME") {
-                document.getElementById("themeMenu").classList.remove("hidden");
-                input.value = "";
-            } else {
-                let convertedValue = parseInput(rawValue);
-                if (!isNaN(convertedValue) && convertedValue > 0) {
-                    input.value = convertedValue.toLocaleString();
-                }
+            let rawValue = input.value.toUpperCase().trim();
+            let convertedValue = parseInput(rawValue);
+            if (!isNaN(convertedValue) && convertedValue > 0) {
+                input.value = convertedValue.toLocaleString();
             }
+        }
+
+        function handlePaste(event, input) {
+            setTimeout(function() {
+                handleInput(input);
+            }, 1);
         }
 
         function calculateProfit() {
