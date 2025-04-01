@@ -82,7 +82,9 @@
             <h3 class="text-lg font-bold mb-3 text-center text-white">Select Theme</h3>
             <button onclick="changeTheme('dark')" class="theme-button w-full mb-2">Dark Mode</button>
             <button onclick="changeTheme('orange')" class="theme-button w-full mb-2">Orange Theme</button>
-            <button onclick="changeTheme('purple')" class="theme-button w-full">Purple Theme</button>
+            <button onclick="changeTheme('purple')" class="theme-button w-full mb-2">Purple Theme</button>
+            <button onclick="changeTheme('redTheme')" class="theme-button w-full mb-2">Red Theme</button>
+            <button onclick="changeTheme('blueTheme')" class="theme-button w-full">Blue Theme</button>
         </div>
     </div>
 
@@ -159,6 +161,14 @@
                 document.documentElement.style.setProperty('--bg-color', '#4b0082');
                 document.documentElement.style.setProperty('--card-color', '#2a004d');
                 document.documentElement.style.setProperty('--button-color', '#8b5cf6');
+            } else if (theme === 'redTheme') {
+                document.documentElement.style.setProperty('--bg-color', '#64002D');
+                document.documentElement.style.setProperty('--card-color', '#8B0031');
+                document.documentElement.style.setProperty('--button-color', '#F50057');
+            } else if (theme === 'blueTheme') {
+                document.documentElement.style.setProperty('--bg-color', '#09193C');
+                document.documentElement.style.setProperty('--card-color', '#0B2C49');
+                document.documentElement.style.setProperty('--button-color', '#1D4ED8');
             }
             document.getElementById("themeMenu").classList.add("hidden");
         }
