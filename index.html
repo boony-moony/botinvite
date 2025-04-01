@@ -58,13 +58,13 @@
 
     <div class="mb-4">
       <label class="block text-sm font-medium">Purchase Price Per Share ($)</label>
-      <input type="number" id="purchasePrice" class="w-full p-2 mt-1 bg-gray-700 text-white border border-gray-600 rounded" 
+      <input type="text" id="purchasePrice" class="w-full p-2 mt-1 bg-gray-700 text-white border border-gray-600 rounded" 
              placeholder="Enter purchase price">
     </div>
 
     <div class="mb-4">
       <label class="block text-sm font-medium">Current Price Per Share ($)</label>
-      <input type="number" id="currentPrice" class="w-full p-2 mt-1 bg-gray-700 text-white border border-gray-600 rounded" 
+      <input type="text" id="currentPrice" class="w-full p-2 mt-1 bg-gray-700 text-white border border-gray-600 rounded" 
              placeholder="Enter current price">
     </div>
 
@@ -149,8 +149,8 @@
     // Calculate profit based on the inputs
     function calculateProfit() {
       let cashInvestedRaw = document.getElementById('cashInvested').value.replace(/,/g, '');
-      let purchasePrice = parseFloat(document.getElementById('purchasePrice').value);
-      let currentPrice = parseFloat(document.getElementById('currentPrice').value);
+      let purchasePrice = parseFloat(document.getElementById('purchasePrice').value.replace(',', '.'));
+      let currentPrice = parseFloat(document.getElementById('currentPrice').value.replace(',', '.'));
 
       let cashInvested = parseInput(cashInvestedRaw);
 
