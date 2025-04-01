@@ -52,7 +52,6 @@
 
     <div class="mb-4">
       <label class="block text-sm font-medium">Cash Invested ($)</label>
-      <!-- oninput calls handleCashInput -->
       <input type="text" id="cashInvested" class="w-full p-2 mt-1 bg-gray-700 text-white border border-gray-600 rounded" 
              placeholder="Enter cash (e.g., 2M, 5B)" oninput="handleCashInput(this)">
     </div>
@@ -91,53 +90,63 @@
   </div>
 
   <script>
+    // Function to format the number with commas
     function formatNumber(num) {
-      if (num >= 1e12) return (num / 1e12).toFixed(2) + 'T';
-      if (num >= 1e9) return (num / 1e9).toFixed(2) + 'B';
-      if (num >= 1e6) return (num / 1e6).toFixed(2) + 'M';
-      if (num >= 1e3) return (num / 1e3).toFixed(2) + 'K';
-      return num.toFixed(2);
+      return num.toLocaleString();  // Convert number to a string with commas
     }
 
-    // Parses the input string and applies multipliers if shorthand is detected.
+    // Parses the shorthand input (k, m, b, t) and returns the full number
     function parseInput(value) {
       value = value.trim().toLowerCase();
-      // Replace comma with dot for decimal (e.g., 5,8 => 5.8)
+
+      // Replace commas with dots for decimal
       if (value.includes(',')) {
         value = value.replace(',', '.');
       }
+
       let multiplier = 1;
       if (value.endsWith('m')) {
-        multiplier = 1e6;
-        value = value.slice(0, -1);
+        multiplier = 1e6; // million
+        value = value.slice(0, -1); // Remove the 'm'
       } else if (value.endsWith('b')) {
-        multiplier = 1e9;
-        value = value.slice(0, -1);
+        multiplier = 1e9; // billion
+        value = value.slice(0, -1); // Remove the 'b'
       } else if (value.endsWith('k')) {
-        multiplier = 1e3;
-        value = value.slice(0, -1);
+        multiplier = 1e3; // thousand
+        value = value.slice(0, -1); // Remove the 'k'
       } else if (value.endsWith('t')) {
-        multiplier = 1e12;
-        value = value.slice(0, -1);
+        multiplier = 1e12; // trillion
+        value = value.slice(0, -1); // Remove the 't'
       }
-      return parseFloat(value) * multiplier || 0;
+
+      let num = parseFloat(value) * multiplier;
+
+      if (!isNaN(num)) {
+        return num;
+      } else {
+        return 0;
+      }
     }
 
-    // Auto-update the cash invested field ONLY if the last character is k, m, b, or t.
+    // Handle input for the "Cash Invested" field
     function handleCashInput(input) {
       let rawValue = input.value.trim();
       if (rawValue === "") return;
-      // Check if the last character is one of the shorthand letters
+
+      // Check if the last character is one of the shorthand letters (k, m, b, t)
       let lastChar = rawValue.slice(-1).toLowerCase();
       if ("kmbt".includes(lastChar)) {
         let convertedValue = parseInput(rawValue);
         if (!isNaN(convertedValue) && convertedValue > 0) {
-          input.value = formatNumber(convertedValue);
+          input.value = formatNumber(convertedValue); // Format number with commas
         }
+      } else {
+        // Allow for regular input with numbers or decimals, no auto-formatting here
+        input.value = rawValue.replace(/,/g, '');  // Remove commas if any
       }
-      // If no shorthand, do not alter the value as the user types.
     }
 
+    // Calculate profit based on the inputs
     function calculateProfit() {
       let cashInvestedRaw = document.getElementById('cashInvested').value.replace(/,/g, '');
       let purchasePrice = parseFloat(document.getElementById('purchasePrice').value);
