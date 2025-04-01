@@ -13,7 +13,7 @@
 
         <div class="mb-4">
             <label class="block text-sm font-medium text-gray-300">Cash Invested ($)</label>
-            <input type="number" id="cashInvested" class="w-full p-2 mt-1 bg-gray-700 text-white border border-gray-600 rounded" placeholder="Enter cash amount">
+            <input type="text" id="cashInvested" class="w-full p-2 mt-1 bg-gray-700 text-white border border-gray-600 rounded" placeholder="Enter cash (e.g., 2M, 5B)">
         </div>
 
         <div class="mb-4">
@@ -46,10 +46,24 @@
             return num.toFixed(2);
         }
 
+        function parseInput(value) {
+            value = value.toUpperCase().trim();
+            let multiplier = 1;
+            
+            if (value.endsWith('T')) multiplier = 1e12;
+            else if (value.endsWith('B')) multiplier = 1e9;
+            else if (value.endsWith('M')) multiplier = 1e6;
+            else if (value.endsWith('K')) multiplier = 1e3;
+
+            return parseFloat(value.replace(/[KMBT]/, '')) * multiplier || 0;
+        }
+
         function calculateProfit() {
-            let cashInvested = parseFloat(document.getElementById('cashInvested').value);
+            let cashInvestedRaw = document.getElementById('cashInvested').value;
             let purchasePrice = parseFloat(document.getElementById('purchasePrice').value);
             let currentPrice = parseFloat(document.getElementById('currentPrice').value);
+
+            let cashInvested = parseInput(cashInvestedRaw);
 
             if (isNaN(cashInvested) || isNaN(purchasePrice) || isNaN(currentPrice) || purchasePrice <= 0) {
                 alert('Please enter valid numbers');
