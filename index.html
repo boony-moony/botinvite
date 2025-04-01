@@ -53,7 +53,7 @@
     <div class="mb-4">
       <label class="block text-sm font-medium">Cash Invested ($)</label>
       <input type="text" id="cashInvested" class="w-full p-2 mt-1 bg-gray-700 text-white border border-gray-600 rounded" 
-             placeholder="Enter cash (e.g., 2M, 5B)" oninput="handleCashInput(this)">
+             placeholder="Enter cash (e.g., 2M, 5B)" oninput="handleCashInput(this)" onblur="formatInvestedField(this)">
     </div>
 
     <div class="mb-4">
@@ -90,19 +90,14 @@
   </div>
 
   <script>
-    // Function to format the number with commas
-    function formatNumber(num) {
-      return num.toLocaleString();  // Convert number to a string with commas
+    // Function to format the number with dots as thousand separators and comma as decimal
+    function formatNumberWithComma(num) {
+      return num.toLocaleString('de-DE');  // Using 'de-DE' locale for comma as decimal
     }
 
     // Parses the shorthand input (k, m, b, t) and returns the full number
     function parseInput(value) {
       value = value.trim().toLowerCase();
-
-      // Replace commas with dots for decimal
-      if (value.includes(',')) {
-        value = value.replace(',', '.');
-      }
 
       let multiplier = 1;
       if (value.endsWith('m')) {
@@ -131,19 +126,26 @@
     // Handle input for the "Cash Invested" field
     function handleCashInput(input) {
       let rawValue = input.value.trim();
+
+      // Only allow numeric characters and commas
+      rawValue = rawValue.replace(/[^0-9,]/g, '');
+
+      // If value includes commas, let it be for now and wait for blur
+      input.value = rawValue;
+    }
+
+    // Format the field after the user is done typing
+    function formatInvestedField(input) {
+      let rawValue = input.value.trim();
       if (rawValue === "") return;
 
-      // Only apply shorthand conversions for "k", "m", "b", "t"
-      let lastChar = rawValue.slice(-1).toLowerCase();
-      if ("kmbt".includes(lastChar)) {
-        let convertedValue = parseInput(rawValue);
-        if (!isNaN(convertedValue) && convertedValue > 0) {
-          input.value = formatNumber(convertedValue); // Format number with commas
-        }
-      } else {
-        // Allow for regular input with numbers or decimals
-        input.value = rawValue.replace(/,/g, '');  // Remove commas if any
-      }
+      // Replace any commas with periods for decimal
+      rawValue = rawValue.replace(',', '.');
+
+      // Format the number with thousands separator
+      let formattedValue = parseInput(rawValue);
+
+      input.value = formatNumberWithComma(formattedValue); // Format number with commas
     }
 
     // Calculate profit based on the inputs
@@ -165,9 +167,9 @@
       let profitLoss = totalValue - cashInvested;
       let percentageChange = ((profitLoss / cashInvested) * 100).toFixed(2);
 
-      document.getElementById('sharesOwned').textContent = formatNumber(sharesOwned);
-      document.getElementById('totalValue').textContent = `$${formatNumber(totalValue)}`;
-      document.getElementById('profitLoss').textContent = `$${formatNumber(profitLoss)}`;
+      document.getElementById('sharesOwned').textContent = formatNumberWithComma(sharesOwned);
+      document.getElementById('totalValue').textContent = `$${formatNumberWithComma(totalValue)}`;
+      document.getElementById('profitLoss').textContent = `$${formatNumberWithComma(profitLoss)}`;
       document.getElementById('profitLoss').className = profitLoss >= 0 ? 'text-green-400' : 'text-red-400';
       document.getElementById('percentageChange').textContent = `${percentageChange}%`;
       document.getElementById('percentageChange').className = profitLoss >= 0 ? 'text-green-400' : 'text-red-400';
