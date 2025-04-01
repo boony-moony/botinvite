@@ -97,8 +97,9 @@
 
         function parseInput(value) {
             value = value.toUpperCase().trim();
+            value = value.replace(/,/g, '');  // Remove commas
             let multiplier = 1;
-            
+
             if (value.endsWith('T')) multiplier = 1e12;
             else if (value.endsWith('B')) multiplier = 1e9;
             else if (value.endsWith('M')) multiplier = 1e6;
@@ -115,7 +116,7 @@
             } else {
                 let convertedValue = parseInput(rawValue);
                 if (!isNaN(convertedValue) && convertedValue > 0) {
-                    input.value = convertedValue.toLocaleString();
+                    input.value = convertedValue.toLocaleString();  // Format with commas
                 }
             }
         }
