@@ -13,7 +13,7 @@
 
         <div class="mb-4">
             <label class="block text-sm font-medium text-gray-300">Cash Invested ($)</label>
-            <input type="text" id="cashInvested" class="w-full p-2 mt-1 bg-gray-700 text-white border border-gray-600 rounded" placeholder="Enter cash (e.g., 2M, 5B)">
+            <input type="text" id="cashInvested" class="w-full p-2 mt-1 bg-gray-700 text-white border border-gray-600 rounded" placeholder="Enter cash (e.g., 2M, 5B)" oninput="liveConvertInput(this)">
         </div>
 
         <div class="mb-4">
@@ -58,8 +58,16 @@
             return parseFloat(value.replace(/[KMBT]/, '')) * multiplier || 0;
         }
 
+        function liveConvertInput(input) {
+            let rawValue = input.value.toUpperCase();
+            let convertedValue = parseInput(rawValue);
+            if (!isNaN(convertedValue) && convertedValue > 0) {
+                input.value = convertedValue.toLocaleString();
+            }
+        }
+
         function calculateProfit() {
-            let cashInvestedRaw = document.getElementById('cashInvested').value;
+            let cashInvestedRaw = document.getElementById('cashInvested').value.replace(/,/g, '');
             let purchasePrice = parseFloat(document.getElementById('purchasePrice').value);
             let currentPrice = parseFloat(document.getElementById('currentPrice').value);
 
