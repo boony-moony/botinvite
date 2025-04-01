@@ -5,35 +5,64 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Stock Market Calculator</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Default (Dark Mode) */
+        :root {
+            --bg-color: #1a202c;
+            --card-color: #2d3748;
+            --text-color: #ffffff;
+            --button-color: #22c55e;
+        }
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+        }
+        .card {
+            background-color: var(--card-color);
+        }
+        .button {
+            background-color: var(--button-color);
+        }
+    </style>
 </head>
-<body class="bg-gray-900 text-white">
+<body>
 
-    <div class="max-w-md mx-auto mt-10 p-5 bg-gray-800 rounded-lg shadow-lg">
+    <div class="max-w-md mx-auto mt-10 p-5 card rounded-lg shadow-lg">
         <h2 class="text-xl font-bold text-center mb-5">Stock Market Calculator</h2>
 
         <div class="mb-4">
-            <label class="block text-sm font-medium text-gray-300">Cash Invested ($)</label>
-            <input type="text" id="cashInvested" class="w-full p-2 mt-1 bg-gray-700 text-white border border-gray-600 rounded" placeholder="Enter cash (e.g., 2M, 5B)" oninput="liveConvertInput(this)">
+            <label class="block text-sm font-medium">Cash Invested ($)</label>
+            <input type="text" id="cashInvested" class="w-full p-2 mt-1 bg-gray-700 text-white border border-gray-600 rounded" placeholder="Enter cash (e.g., 2M, 5B)" oninput="handleInput(this)">
         </div>
 
         <div class="mb-4">
-            <label class="block text-sm font-medium text-gray-300">Purchase Price Per Share ($)</label>
+            <label class="block text-sm font-medium">Purchase Price Per Share ($)</label>
             <input type="number" id="purchasePrice" class="w-full p-2 mt-1 bg-gray-700 text-white border border-gray-600 rounded" placeholder="Enter purchase price">
         </div>
 
         <div class="mb-4">
-            <label class="block text-sm font-medium text-gray-300">Current Price Per Share ($)</label>
+            <label class="block text-sm font-medium">Current Price Per Share ($)</label>
             <input type="number" id="currentPrice" class="w-full p-2 mt-1 bg-gray-700 text-white border border-gray-600 rounded" placeholder="Enter current price">
         </div>
 
-        <button onclick="calculateProfit()" class="w-full bg-green-600 hover:bg-green-500 text-white font-bold py-2 px-4 rounded">Calculate</button>
+        <button onclick="calculateProfit()" class="w-full button hover:opacity-80 text-white font-bold py-2 px-4 rounded">Calculate</button>
 
-        <div class="mt-5 p-4 bg-gray-700 rounded">
+        <div class="mt-5 p-4 card rounded">
             <h3 class="text-lg font-bold">Results</h3>
             <p>Shares Owned: <span id="sharesOwned">0</span></p>
             <p>Total Value: <span id="totalValue">$0</span></p>
             <p>Profit/Loss: <span id="profitLoss" class="text-green-400">$0</span></p>
             <p>Percentage Change: <span id="percentageChange" class="text-green-400">0.00%</span></p>
+        </div>
+    </div>
+
+    <!-- Hidden Theme Menu -->
+    <div id="themeMenu" class="hidden fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+        <div class="bg-white p-6 rounded shadow-lg">
+            <h3 class="text-lg font-bold mb-3">Select Theme</h3>
+            <button onclick="changeTheme('dark')" class="block w-full mb-2 p-2 bg-gray-800 text-white rounded">Dark Mode</button>
+            <button onclick="changeTheme('orange')" class="block w-full mb-2 p-2 bg-orange-600 text-white rounded">Orange Theme</button>
+            <button onclick="changeTheme('purple')" class="block w-full p-2 bg-purple-600 text-white rounded">Purple Theme</button>
         </div>
     </div>
 
@@ -58,11 +87,16 @@
             return parseFloat(value.replace(/[KMBT]/, '')) * multiplier || 0;
         }
 
-        function liveConvertInput(input) {
+        function handleInput(input) {
             let rawValue = input.value.toUpperCase();
-            let convertedValue = parseInput(rawValue);
-            if (!isNaN(convertedValue) && convertedValue > 0) {
-                input.value = convertedValue.toLocaleString();
+            if (rawValue === "THEME") {
+                document.getElementById("themeMenu").classList.remove("hidden");
+                input.value = "";
+            } else {
+                let convertedValue = parseInput(rawValue);
+                if (!isNaN(convertedValue) && convertedValue > 0) {
+                    input.value = convertedValue.toLocaleString();
+                }
             }
         }
 
@@ -89,6 +123,26 @@
             document.getElementById('profitLoss').className = profitLoss >= 0 ? 'text-green-400' : 'text-red-400';
             document.getElementById('percentageChange').textContent = `${percentageChange}%`;
             document.getElementById('percentageChange').className = profitLoss >= 0 ? 'text-green-400' : 'text-red-400';
+        }
+
+        function changeTheme(theme) {
+            if (theme === 'dark') {
+                document.documentElement.style.setProperty('--bg-color', '#1a202c');
+                document.documentElement.style.setProperty('--card-color', '#2d3748');
+                document.documentElement.style.setProperty('--text-color', '#ffffff');
+                document.documentElement.style.setProperty('--button-color', '#22c55e');
+            } else if (theme === 'orange') {
+                document.documentElement.style.setProperty('--bg-color', '#ff6b00');
+                document.documentElement.style.setProperty('--card-color', '#662200');
+                document.documentElement.style.setProperty('--text-color', '#ffffff');
+                document.documentElement.style.setProperty('--button-color', '#ff9500');
+            } else if (theme === 'purple') {
+                document.documentElement.style.setProperty('--bg-color', '#6a0dad');
+                document.documentElement.style.setProperty('--card-color', '#330066');
+                document.documentElement.style.setProperty('--text-color', '#ffffff');
+                document.documentElement.style.setProperty('--button-color', '#9b30ff');
+            }
+            document.getElementById("themeMenu").classList.add("hidden");
         }
     </script>
 
