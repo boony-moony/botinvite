@@ -23,37 +23,16 @@
         .button {
             background-color: var(--button-color);
         }
-        /* Theme menu styles */
-        #themeMenu {
-            background-color: rgba(0, 0, 0, 0.6);
-        }
-        .theme-card {
-            background-color: var(--card-color);
-            padding: 1.5rem;
-            border-radius: 1rem;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-        .theme-button {
-            background-color: var(--button-color);
-            text-align: center;
-            padding: 0.75rem;
-            font-weight: bold;
-            border-radius: 0.5rem;
-            transition: background-color 0.3s;
-        }
-        .theme-button:hover {
-            opacity: 0.8;
-        }
-        /* Add custom styles for the dropdown and graph */
         #statisticsDropdown {
             background-color: var(--card-color);
             padding: 1rem;
             border-radius: 1rem;
             margin-top: 1rem;
+            display: none;
         }
     </style>
 </head>
-<body onload="loadTheme()">
+<body>
 
     <div class="max-w-md mx-auto mt-10 p-5 card rounded-lg shadow-lg">
         <h2 class="text-xl font-bold text-center mb-5">Stock Market Calculator</h2>
@@ -84,7 +63,7 @@
         </div>
 
         <!-- Dropdown for additional statistics -->
-        <div id="statisticsDropdown" class="hidden">
+        <div id="statisticsDropdown">
             <h3 class="text-lg font-bold mb-3">Additional Statistics</h3>
             <p>ROI: <span id="roi">0%</span></p>
             <p>Total Shares Sold: <span id="sharesSold">0</span></p>
@@ -97,19 +76,9 @@
         </div>
     </div>
 
-    <!-- Hidden Theme Menu -->
-    <div id="themeMenu" class="hidden fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
-        <div class="theme-card">
-            <h3 class="text-lg font-bold mb-3 text-center text-white">Select Theme</h3>
-            <button onclick="changeTheme('dark')" class="theme-button w-full mb-2">Dark Mode</button>
-            <button onclick="changeTheme('orange')" class="theme-button w-full mb-2">Orange Theme</button>
-            <button onclick="changeTheme('purple')" class="theme-button w-full">Purple Theme</button>
-        </div>
-    </div>
-
     <script>
         let investmentData = [];
-        
+
         function formatNumber(num) {
             if (num >= 1e12) return (num / 1e12).toFixed(2) + 'T';
             if (num >= 1e9) return (num / 1e9).toFixed(2) + 'B';
@@ -159,8 +128,8 @@
             let totalValue = sharesOwned * currentPrice;
             let profitLoss = totalValue - cashInvested;
             let percentageChange = ((profitLoss / cashInvested) * 100).toFixed(2);
-            let roi = ((profitLoss / cashInvested) * 100).toFixed(2);  // ROI = Profit / Invested * 100
-            let sharesSold = sharesOwned * currentPrice;  // Assuming shares are sold at the current price
+            let roi = ((profitLoss / cashInvested) * 100).toFixed(2);
+            let sharesSold = sharesOwned * currentPrice;
 
             // Update statistics
             document.getElementById('sharesOwned').textContent = formatNumber(sharesOwned);
@@ -178,7 +147,7 @@
             updateGraph();
 
             // Show the dropdown statistics
-            document.getElementById('statisticsDropdown').classList.remove('hidden');
+            document.getElementById('statisticsDropdown').style.display = 'block';
         }
 
         function updateGraph() {
@@ -219,31 +188,11 @@
                 }
             };
 
-            new Chart(ctx, config);
-        }
-
-        function changeTheme(theme) {
-            localStorage.setItem("selectedTheme", theme);
-
-            if (theme === 'dark') {
-                document.documentElement.style.setProperty('--bg-color', '#1a202c');
-                document.documentElement.style.setProperty('--card-color', '#2d3748');
-                document.documentElement.style.setProperty('--button-color', '#22c55e');
-            } else if (theme === 'orange') {
-                document.documentElement.style.setProperty('--bg-color', '#a34f00');
-                document.documentElement.style.setProperty('--card-color', '#552a00');
-                document.documentElement.style.setProperty('--button-color', '#d97706');
-            } else if (theme === 'purple') {
-                document.documentElement.style.setProperty('--bg-color', '#4b0082');
-                document.documentElement.style.setProperty('--card-color', '#2a004d');
-                document.documentElement.style.setProperty('--button-color', '#8b5cf6');
+            if (investmentData.length === 1) {
+                new Chart(ctx, config);
+            } else {
+                ctx.chart.update();
             }
-            document.getElementById("themeMenu").classList.add("hidden");
-        }
-
-        function loadTheme() {
-            let savedTheme = localStorage.getItem("selectedTheme");
-            if (savedTheme) changeTheme(savedTheme);
         }
     </script>
 
